@@ -11,6 +11,7 @@ with pytest.MonkeyPatch().context() as CTX:
     from awslabs.amazon_mq_mcp_server.server import (
         allow_mutative_action_only_on_tagged_resource,
         create_broker_override,
+        create_configuration_override,
         main,
         mcp,
     )
@@ -92,6 +93,74 @@ class TestCreateBrokerOverride:
             PubliclyAccessible=publicly_accessible,
             AutoMinorVersionUpgrade=auto_minor_version_upgrade,
             Users=users,
+            Tags={'mcp_server_version': MCP_SERVER_VERSION},
+        )
+
+
+class TestCreateConfigurationOverride:
+    """Tests for the create_configuration_override function."""
+
+    def test_create_configuration_override_function(self):
+        """Test that create_configuration_override creates a tool function."""
+        mock_mcp = MagicMock()
+        mock_client_getter = MagicMock()
+        mock_region = 'us-east-1'
+
+        # Call the function
+        create_configuration_override(mock_mcp, mock_client_getter, mock_region)
+
+        # Check that mcp.tool was called
+        mock_mcp.tool.assert_called_once()
+
+        # Get the decorator function
+        decorator = mock_mcp.tool()
+
+        # Check that the decorator was applied to a function
+        assert callable(decorator)
+
+    @patch('boto3.client')
+    def test_handle_create_configuration(self, mock_boto3_client):
+        """Test the handle_create_configuration function created by create_configuration_override."""
+        # Setup mock MCP
+        mock_mcp = MagicMock()
+        mock_tool_decorator = MagicMock()
+        mock_mcp.tool.return_value = mock_tool_decorator
+
+        # Setup mock client getter
+        mock_client = MagicMock()
+        mock_client_getter = MagicMock(return_value=mock_client)
+
+        # Call create_configuration_override to get the decorated function
+        create_configuration_override(mock_mcp, mock_client_getter, 'us-east-1')
+
+        # Get the decorated function
+        handle_create_configuration = mock_tool_decorator.call_args[0][0]
+
+        # Test parameters for the handle_create_configuration function
+        region = 'us-west-2'
+        authentication_strategy = 'SIMPLE'
+        engine_type = 'RABBITMQ'
+        engine_version = '3.10.20'
+        name = 'test-configuration'
+
+        # Call the function
+        handle_create_configuration(
+            region=region,
+            authentication_strategy=authentication_strategy,
+            engine_type=engine_type,
+            engine_version=engine_version,
+            name=name,
+        )
+
+        # Check that the client getter was called with the correct region
+        mock_client_getter.assert_called_once_with(region)
+
+        # Check that create_configuration was called with the correct parameters
+        mock_client.create_configuration.assert_called_once_with(
+            AuthenticationStrategy=authentication_strategy,
+            EngineType=engine_type,
+            EngineVersion=engine_version,
+            Name=name,
             Tags={'mcp_server_version': MCP_SERVER_VERSION},
         )
 
