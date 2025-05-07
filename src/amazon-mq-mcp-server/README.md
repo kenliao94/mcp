@@ -66,31 +66,6 @@ Configure the MCP server in your MCP client configuration (e.g., for Amazon Q De
 }
 ```
 
-Or using Docker:
-
-```json
-{
-  "mcpServers": {
-    "awslabs.amazon-mq-mcp-server": {
-      "command": "docker",
-      "args": [
-        "run",
-        "--rm",
-        "--interactive",
-        "--env",
-        "AWS_REGION=us-east-1",
-        "--env-file",
-        "/path/to/your/.env",
-        "awslabs/amazon-mq-mcp-server:latest"
-      ],
-      "env": {},
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}
-```
-
 ## Usage
 
 Once configured, the MCP server provides the following tools to interact with Amazon MQ:
