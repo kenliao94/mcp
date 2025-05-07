@@ -19,7 +19,7 @@ def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, 
     """Create a ActiveMQ or RabbitMQ broker on AmazonMQ."""
 
     @mcp.tool()
-    def handle_create_broker(
+    def create_broker(
         broker_name: str,
         engine_type: str,
         engine_version: str,
@@ -30,6 +30,7 @@ def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, 
         users: List[Dict[str, str]],
         region: str = 'us-east-1',
     ):
+        """Create a ActiveMQ or RabbitMQ broker on AmazonMQ."""
         create_params = {
             'BrokerName': broker_name,
             'EngineType': engine_type,
@@ -47,6 +48,24 @@ def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, 
         response = mq_client.create_broker(**create_params)
         return response
 
+def create_configuration_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, _: str):
+    """Create configuration for AmazonMQ broker."""
+
+    @mcp.tool()
+    def create_configuration(region: str, authentication_strategy: str, engine_type: str, engine_version: str, name: str):
+        """Create configuration for AmazonMQ broker."""
+        create_params = {
+            'AuthenticationStrategy': authentication_strategy,
+            'EngineType': engine_type,
+            'EngineVersion': engine_version,
+            'Name': name,
+            'Tags': {
+                'mcp_server_version': MCP_SERVER_VERSION,
+            },
+        }
+        mq_client = mq_client_getter(region)
+        response = mq_client.create_configuration(**create_params)
+        return response
 
 # Define validator such that only resource tagged with mcp_server_version can be mutated
 def allow_mutative_action_only_on_tagged_resource(
@@ -74,10 +93,21 @@ generator = AWSToolGenerator(
         'close': {'ignore': True},
         'can_paginate': {'ignore': True},
         'generate_presigned_url': {'ignore': True},
-        'delete_tags': {'ignore': True},
         'create_tags': {'ignore': True},
         'create_broker': {'func_override': create_broker_override},
+        'create_configuration': {'func_override': create_configuration_override},
+        'create_user': {'ignore': True},
         'delete_broker': {'validator': allow_mutative_action_only_on_tagged_resource},
+        'delete_configuration': {'validator': allow_mutative_action_only_on_tagged_resource},
+        'delete_tags': {'ignore': True},
+        'delete_user': {'ignore': True},
+        'get_paginator': {'ignore': True},
+        'get_waiter': {'ignore': True},
+        'promote': {'validator': allow_mutative_action_only_on_tagged_resource},
+        'reboot_broker': {'validator': allow_mutative_action_only_on_tagged_resource},
+        'update_broker': {'validator': allow_mutative_action_only_on_tagged_resource},
+        'update_configuration': {'validator': allow_mutative_action_only_on_tagged_resource},
+        'update_user': {'ignore': True},
     },
 )
 generator.generate()
