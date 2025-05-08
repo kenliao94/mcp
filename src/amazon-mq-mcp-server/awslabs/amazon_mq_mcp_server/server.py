@@ -48,11 +48,14 @@ def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, 
         response = mq_client.create_broker(**create_params)
         return response
 
+
 def create_configuration_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, _: str):
     """Create configuration for AmazonMQ broker."""
 
     @mcp.tool()
-    def create_configuration(region: str, authentication_strategy: str, engine_type: str, engine_version: str, name: str):
+    def create_configuration(
+        region: str, authentication_strategy: str, engine_type: str, engine_version: str, name: str
+    ):
         """Create configuration for AmazonMQ broker."""
         create_params = {
             'AuthenticationStrategy': authentication_strategy,
@@ -66,6 +69,7 @@ def create_configuration_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_G
         mq_client = mq_client_getter(region)
         response = mq_client.create_configuration(**create_params)
         return response
+
 
 # Define validator such that only resource tagged with mcp_server_version can be mutated
 def allow_mutative_action_only_on_tagged_resource(
