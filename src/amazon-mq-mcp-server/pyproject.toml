@@ -34,7 +34,7 @@ dependencies = [
 ]
 
 [project.scripts]
-"awslabs.amazon_mq_mcp_server" = "awslabs.amazon_mq_mcp_server.server:main"
+"awslabs.amazon-mq-mcp-server" = "awslabs.amazon_mq_mcp_server.server:main"
 
 [project.urls]
 Homepage = "https://awslabs.github.io/mcp/"

@@ -66,6 +66,36 @@ Configure the MCP server in your MCP client configuration (e.g., for Amazon Q De
 }
 ```
 
+or docker after a succesful `docker build -t awslabs/amazon-mq-mcp-server .`:
+
+```file
+# ficticious `.env` file with AWS temporary credentials
+AWS_ACCESS_KEY_ID=<from the profile you set up>
+AWS_SECRET_ACCESS_KEY=<from the profile you set up>
+AWS_SESSION_TOKEN=<from the profile you set up>
+```
+
+```json
+  {
+    "mcpServers": {
+      "awslabs.lambda-mcp-server": {
+        "command": "docker",
+        "args": [
+          "run",
+          "--rm",
+          "--interactive",
+          "--env-file",
+          "/full/path/to/file/above/.env",
+          "awslabs/amazon-mq-mcp-server:latest"
+        ],
+        "env": {},
+        "disabled": false,
+        "autoApprove": []
+      }
+    }
+  }
+```
+
 ## Usage
 
 Once configured, the MCP server provides the following tools to interact with Amazon MQ:
