@@ -285,7 +285,7 @@ class TestAWSToolGenerator:
 
         # Test the MCP server configuration
         assert mcp.name == 'awslabs.amazon-mq-mcp-server'
-        assert 'Manage RabbitMQ and ActiveMQ message brokers on AmazonMQ' in mcp.instructions
+        assert 'Manage RabbitMQ and ActiveMQ message brokers on AmazonMQ.' == mcp.instructions
 
         # Test that the create_broker_override function is properly defined
         # by checking if it's a callable function
