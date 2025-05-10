@@ -5,14 +5,6 @@ from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, List
 
 
-# instantiate base server
-mcp = FastMCP(
-    'awslabs.amazon-mq-mcp-server',
-    instructions="""Manage RabbitMQ and ActiveMQ message brokers on AmazonMQ.""",
-    dependencies=['pydantic', 'boto3'],
-)
-
-
 # override create_broker tool to tag resources
 def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, _: str):
     """Create a ActiveMQ or RabbitMQ broker on AmazonMQ."""
@@ -88,17 +80,34 @@ def allow_mutative_action_only_on_tagged_resource(
         return False, str(e)
 
 
-generator = AWSToolGenerator(
-    service_name='mq',
-    service_display_name='AmazonMQ',
-    mcp=mcp,
-    tool_configuration={
+# instantiate base server
+mcp = FastMCP(
+    'awslabs.amazon-mq-mcp-server',
+    instructions="""Manage RabbitMQ and ActiveMQ message brokers on AmazonMQ.""",
+    dependencies=['pydantic', 'boto3'],
+)
+
+
+def main():
+    """Run the MCP server with CLI argument support."""
+    parser = argparse.ArgumentParser(
+        description='An AWS Model Context Protocol (MCP) server for Lambda'
+    )
+    parser.add_argument('--sse', action='store_true', help='Use SSE transport')
+    parser.add_argument(
+        '--disallow-resource-creation',
+        action='store_true',
+        help='Hide tools that create resources on user AWS account',
+    )
+    parser.add_argument('--port', type=int, default=8888, help='Port to run the server on')
+
+    args = parser.parse_args()
+
+    tool_configuration = {
         'close': {'ignore': True},
         'can_paginate': {'ignore': True},
         'generate_presigned_url': {'ignore': True},
         'create_tags': {'ignore': True},
-        'create_broker': {'func_override': create_broker_override},
-        'create_configuration': {'func_override': create_configuration_override},
         'create_user': {'ignore': True},
         'delete_broker': {'validator': allow_mutative_action_only_on_tagged_resource},
         'delete_configuration': {'validator': allow_mutative_action_only_on_tagged_resource},
@@ -111,20 +120,25 @@ generator = AWSToolGenerator(
         'update_broker': {'validator': allow_mutative_action_only_on_tagged_resource},
         'update_configuration': {'validator': allow_mutative_action_only_on_tagged_resource},
         'update_user': {'ignore': True},
-    },
-)
-generator.generate()
-
-
-def main():
-    """Run the MCP server with CLI argument support."""
-    parser = argparse.ArgumentParser(
-        description='An AWS Model Context Protocol (MCP) server for Lambda'
+    }
+    tool_configuration['create_broker'] = (
+        {'ignore': True}
+        if args.disallow_resource_creation
+        else {'func_override': create_broker_override}
     )
-    parser.add_argument('--sse', action='store_true', help='Use SSE transport')
-    parser.add_argument('--port', type=int, default=8888, help='Port to run the server on')
+    tool_configuration['create_configuration'] = (
+        {'ignore': True}
+        if args.disallow_resource_creation
+        else {'func_override': create_configuration_override}
+    )
 
-    args = parser.parse_args()
+    generator = AWSToolGenerator(
+        service_name='mq',
+        service_display_name='AmazonMQ',
+        mcp=mcp,
+        tool_configuration=tool_configuration,
+    )
+    generator.generate()
 
     if args.sse:
         mcp.settings.port = args.port

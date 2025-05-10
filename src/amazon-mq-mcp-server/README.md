@@ -95,44 +95,40 @@ AWS_SESSION_TOKEN=<from the profile you set up>
     }
   }
 ```
+## Server Configuration Options
 
-## Usage
+The Amazon MQ MCP Server supports several command-line arguments that can be used to configure its behavior:
 
-Once configured, the MCP server provides the following tools to interact with Amazon MQ:
+### `--sse`
 
-### Creating Resources
+Use Server-Sent Events (SSE) transport instead of stdio. Default is False.
 
-- Create a broker with automatic tagging:
-  ```
-  create_broker(broker_name, engine_type, engine_version, host_instance_type, deployment_mode, publicly_accessible, auto_minor_version_upgrade, users, region)
-  ```
+Example:
+```bash
+uv run awslabs.amazon-mq-mcp-server --sse
+```
 
-- Create a configuration:
-  ```
-  create_configuration(region, authentication_strategy, engine_type, engine_version, name)
-  ```
+### `--port PORT`
 
-### Managing Resources
+Specifies the port number on which the server will listen. Default is 6274.
 
-- List brokers:
-  ```
-  list_brokers(region)
-  ```
+Example:
+```bash
+uv run awslabs.amazon-mq-mcp-server --port 9000
+```
 
-- Describe a broker:
-  ```
-  describe_broker(broker_id, region)
-  ```
+### `--disallow-resource-creation`
 
-- Update a broker:
-  ```
-  update_broker(broker_id, configuration, region)
-  ```
+Disables tools that create resources in the user's AWS account. When this flag is enabled, the `create_broker` and `create_configuration` tools will be hidden from the MCP client, preventing the creation of new Amazon MQ resources. Default is False.
 
-- Reboot a broker:
-  ```
-  reboot_broker(broker_id, region)
-  ```
+This flag is particularly useful for:
+- Testing environments where resource creation should be restricted
+- Limiting the scope of actions available to the AI model
+
+Example:
+```bash
+uv run awslabs.amazon-mq-mcp-server --disallow-resource-creation
+```
 
 ### Security Features
 
