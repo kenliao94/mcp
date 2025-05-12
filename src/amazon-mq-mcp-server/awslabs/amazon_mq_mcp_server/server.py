@@ -1,5 +1,8 @@
 import argparse
-from aws_service_mcp_generator.generator import BOTO3_CLIENT_GETTER, AWSToolGenerator
+from awslabs.amazon_mq_mcp_server.aws_service_mcp_generator import (
+    BOTO3_CLIENT_GETTER,
+    AWSToolGenerator,
+)
 from awslabs.amazon_mq_mcp_server.consts import MCP_SERVER_VERSION
 from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, List
