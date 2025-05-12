@@ -43,6 +43,7 @@ def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, 
         return response
 
 
+# override create_configuration tool to tag resources
 def create_configuration_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, _: str):
     """Create configuration for AmazonMQ broker."""
 
