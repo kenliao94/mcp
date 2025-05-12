@@ -1,3 +1,5 @@
+# pyright: reportAttributeAccessIssue=false, reportFunctionMemberAccess=false
+# because boto3 client doesn't have any type hinting
 import unittest
 from awslabs.amazon_mq_mcp_server.aws_service_mcp_generator import AWSToolGenerator
 from unittest.mock import MagicMock, patch

@@ -1,3 +1,5 @@
+# pyright: reportAttributeAccessIssue=false, reportFunctionMemberAccess=false
+# because boto3 client doesn't have any type hinting
 import boto3
 import botocore.session
 import inspect
@@ -23,7 +25,7 @@ class AWSToolGenerator:
         service_name: str,
         service_display_name: str,
         mcp: FastMCP,
-        tool_configuration: Dict[str, Dict[str, Any]] = None,
+        tool_configuration: Dict[str, Dict[str, Any]] | None = None,
         skip_param_documentation: bool = False,
     ):
         """Initialize the AWS Service Tool.
@@ -63,7 +65,9 @@ class AWSToolGenerator:
                 if config.get('ignore'):
                     continue
                 if config.get('func_override') is not None:
-                    self.__handle_function_override(operation, config.get('func_override'))
+                    fn = config.get('func_override')
+                    assert fn is not None
+                    self.__handle_function_override(operation, fn)
                     continue
                 func = self.__create_operation_function(
                     operation,
@@ -74,7 +78,7 @@ class AWSToolGenerator:
                     self.mcp.tool(description=func.__doc__)(func)
                 continue
 
-    def __get_client(self, region: str = 'us-east-1') -> boto3.client:
+    def __get_client(self, region: str = 'us-east-1') -> Any:
         """Get or create a service client for the specified region."""
         client_key = f'{self.service_name}_{region}'
         if client_key not in self.clients:
@@ -94,9 +98,7 @@ class AWSToolGenerator:
         ]
         return sorted(operations)
 
-    def __handle_function_override(
-        self, operation: str, func_override: OVERRIDE_FUNC_TYPE
-    ) -> None:
+    def __handle_function_override(self, operation: str, func_override: Any) -> None:
         """Handle overriding the behaviour of an operation by invoking user provided function. It will pass a boto3 client (default to us-east-1), current MCP server, and the current operation."""
 
         # A getter for the boto3 client
@@ -110,7 +112,7 @@ class AWSToolGenerator:
         self,
         operation: str,
         documentation_override: str | None = None,
-        validator: VALIDATOR | None = None,
+        validator: Any = None,
     ) -> Callable | None:
         """Create a function for a specific service operation."""
         # Get information about parameters and their types
