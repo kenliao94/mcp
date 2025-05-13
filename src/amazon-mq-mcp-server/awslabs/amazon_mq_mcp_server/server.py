@@ -112,8 +112,8 @@ def main():
     )
     parser.add_argument('--sse', action='store_true', help='Use SSE transport')
     parser.add_argument(
-        '--sallow-resource-creation',
-        action='store_false',
+        '--allow-resource-creation',
+        action='store_true',
         help='Hide tools that create resources on user AWS account',
     )
     parser.add_argument('--port', type=int, default=8888, help='Port to run the server on')
@@ -140,12 +140,12 @@ def main():
     }
     tool_configuration['create_broker'] = (
         {'ignore': True}
-        if args.disallow_resource_creation
+        if not args.allow_resource_creation
         else {'func_override': create_broker_override}
     )
     tool_configuration['create_configuration'] = (
         {'ignore': True}
-        if args.disallow_resource_creation
+        if not args.allow_resource_creation
         else {'func_override': create_configuration_override}
     )
 
