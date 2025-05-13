@@ -1,3 +1,16 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
+# with the License. A copy of the License is located at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
+# OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+# This file is part of the awslabs namespace.
+# It is intentionally minimal to support PEP 420 namespace packages.
+
 import argparse
 from awslabs.amazon_mq_mcp_server.aws_service_mcp_generator import (
     BOTO3_CLIENT_GETTER,
@@ -99,8 +112,8 @@ def main():
     )
     parser.add_argument('--sse', action='store_true', help='Use SSE transport')
     parser.add_argument(
-        '--disallow-resource-creation',
-        action='store_true',
+        '--sallow-resource-creation',
+        action='store_false',
         help='Hide tools that create resources on user AWS account',
     )
     parser.add_argument('--port', type=int, default=8888, help='Port to run the server on')
