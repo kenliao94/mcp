@@ -66,6 +66,24 @@ Configure the MCP server in your MCP client configuration (e.g., for Amazon Q De
 }
 ```
 
+If you would like to specify a flag (for example, to disable creation of resources), you can pass it to the args
+
+```json
+{
+  "mcpServers": {
+    "awslabs.amazon-mq-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.amazon-mq-mcp-server@latest", "--disallow-resource-creation"],
+      "env": {
+        "AWS_PROFILE": "your-aws-profile",
+        "AWS_REGION": "us-east-1"
+      }
+    }
+  }
+}
+```
+
+
 or docker after a succesful `docker build -t awslabs/amazon-mq-mcp-server .`:
 
 ```file
