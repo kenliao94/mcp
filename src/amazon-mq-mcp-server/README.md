@@ -73,7 +73,7 @@ If you would like to specify a flag (for example, to allow creation of resources
   "mcpServers": {
     "awslabs.amazon-mq-mcp-server": {
       "command": "uvx",
-      "args": ["awslabs.amazon-mq-mcp-server@latest", "--sallow-resource-creation"],
+      "args": ["awslabs.amazon-mq-mcp-server@latest", "--allow-resource-creation"],
       "env": {
         "AWS_PROFILE": "your-aws-profile",
         "AWS_REGION": "us-east-1"
