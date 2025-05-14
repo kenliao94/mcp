@@ -46,6 +46,7 @@ Changelog = "https://github.com/awslabs/mcp/blob/main/src/nova-mcp-server/CHANGE
 dev = [
     "boto3-stubs[bedrock-runtime]>=1.37.24",
     "commitizen>=4.4.1",
+    "deptry>=0.23.0",
     "pre-commit>=4.2.0",
     "pyright>=1.1.398",
     "pytest>=8.0.0",
