@@ -40,6 +40,7 @@ version = "1.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
+    { name = "botocore" },
     { name = "mcp", extra = ["cli"] },
     { name = "pydantic" },
 ]
@@ -60,6 +61,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "boto3", specifier = ">=1.38.12" },
+    { name = "botocore", specifier = ">=1.38.13" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.8.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
 ]
