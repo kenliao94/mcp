@@ -43,7 +43,7 @@ From a **security** perspective, this server implements resource tagging to ensu
 
 ### IAM Configuration
 
-The authorization between AmazonMQ MCP server and your AWS accounts are performed with AWS profile you setup on the host. There are several ways to setup a AWS profile but we recommend creating a new IAM role that ONLY has `AmazonMQFullAccess` on its permission following the principle of "least privilege". Finally, configure a AWS profile on the host that assumes the new role (for more information, check out the [AWS CLI help page](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-role.html)).
+The authorization between AmazonMQ MCP server and your AWS accounts are performed with AWS profile you setup on the host. There are several ways to setup a AWS profile, however we recommend creating a new IAM role that has `AmazonMQReadOnlyAccess` permission following the principle of "least privilege". Note, if you want to use tools that mutate your tagged resources, you need to grant `AmazonMQFullAccess`. Finally, configure a AWS profile on the host that assumes the new role (for more information, check out the [AWS CLI help page](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-role.html)).
 
 ### Installation
 
