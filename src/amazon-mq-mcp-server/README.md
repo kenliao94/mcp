@@ -207,4 +207,3 @@ When using this MCP server, consider:
 - For connection issues, check network configurations and security groups
 - If resource modification fails with a tag validation error, it means the resource was not created by the MCP server
 - For general Amazon MQ issues, consult the [Amazon MQ documentation](https://docs.aws.amazon.com/amazon-mq/)
-
