@@ -173,7 +173,7 @@ class TestAWSToolGenerator(unittest.TestCase):
         """Test client creation uses custom AWS profile from environment."""
         # Mock environment variable
         mock_env_get.return_value = 'custom-profile'
-        
+
         # Mock session
         mock_session.return_value = self.boto3_session_mock
 
@@ -186,7 +186,7 @@ class TestAWSToolGenerator(unittest.TestCase):
 
         # Verify environment variable was checked
         mock_env_get.assert_called_with('AWS_PROFILE', 'default')
-        
+
         # Verify boto3 Session was called with custom profile
         mock_session.assert_called_with(profile_name='custom-profile', region_name='us-east-1')
 
@@ -196,7 +196,7 @@ class TestAWSToolGenerator(unittest.TestCase):
         """Test client creation uses default AWS profile when environment variable is not set."""
         # Mock environment variable to return 'default' (simulating the default fallback)
         mock_env_get.return_value = 'default'
-        
+
         # Mock session
         mock_session.return_value = self.boto3_session_mock
 
@@ -209,7 +209,7 @@ class TestAWSToolGenerator(unittest.TestCase):
 
         # Verify environment variable was checked with default fallback
         mock_env_get.assert_called_with('AWS_PROFILE', 'default')
-        
+
         # Verify boto3 Session was called with default profile
         mock_session.assert_called_with(profile_name='default', region_name='us-east-1')
 
@@ -387,13 +387,13 @@ class TestAWSToolGenerator(unittest.TestCase):
 
         # Verify client_getter was captured
         self.assertIsNotNone(captured_client_getter)
-        
+
         # Call the client_getter to test it uses the AWS profile
         captured_client_getter('us-west-2')
-        
+
         # Verify environment variable was checked
         mock_env_get.assert_called_with('AWS_PROFILE', 'default')
-        
+
         # Verify boto3 Session was called with the correct profile and region
         mock_boto3_session.assert_called_with(profile_name='test-profile', region_name='us-west-2')
 
@@ -437,13 +437,13 @@ class TestAWSToolGenerator(unittest.TestCase):
 
         # Verify client_getter was captured
         self.assertIsNotNone(captured_client_getter)
-        
+
         # Call the client_getter to test it uses the default profile
         captured_client_getter('eu-west-1')
-        
+
         # Verify environment variable was checked with default fallback
         mock_env_get.assert_called_with('AWS_PROFILE', 'default')
-        
+
         # Verify boto3 Session was called with the default profile and specified region
         mock_boto3_session.assert_called_with(profile_name='default', region_name='eu-west-1')
 
@@ -701,10 +701,10 @@ class TestAWSToolGenerator(unittest.TestCase):
 
         # Verify client_getter was captured
         self.assertIsNotNone(captured_client_getter)
-        
+
         # Call the client_getter with a different service_name parameter
         captured_client_getter('us-east-1', 'sns')
-        
+
         # Verify boto3 Session client was called with the overridden service name
         # Note: The service_name parameter in client_getter is ignored in the current implementation
         # It always uses self.service_name, so we verify it uses 'sqs' not 'sns'
