@@ -250,6 +250,7 @@ class TestAWSToolGenerator(unittest.TestCase):
         func = generator._AWSToolGenerator__create_operation_function('get_queue_url')
 
         # Verify function was created with correct attributes
+        assert func is not None
         self.assertEqual(func.__name__, 'get_queue_url')
         self.assertTrue('Execute the AWS SQS' in func.__doc__)
         self.assertTrue(hasattr(func, '__signature__'))
@@ -388,7 +389,7 @@ class TestAWSToolGenerator(unittest.TestCase):
         generator.generate()
 
         # Verify client_getter was captured
-        self.assertIsNotNone(captured_client_getter)
+        assert captured_client_getter is not None
 
         # Call the client_getter to test it uses the AWS profile
         captured_client_getter('us-west-2')
@@ -441,7 +442,7 @@ class TestAWSToolGenerator(unittest.TestCase):
         generator.generate()
 
         # Verify client_getter was captured
-        self.assertIsNotNone(captured_client_getter)
+        assert captured_client_getter is not None
 
         # Call the client_getter to test it uses the default profile
         captured_client_getter('eu-west-1')
@@ -500,6 +501,7 @@ class TestAWSToolGenerator(unittest.TestCase):
         # Test the created function with validator
         import asyncio
 
+        assert operation_func is not None
         result = asyncio.run(operation_func(region='us-east-1'))
 
         # Verify validator was called
@@ -570,6 +572,7 @@ class TestAWSToolGenerator(unittest.TestCase):
             # Test the created function with ClientError
             import asyncio
 
+            assert operation_func is not None
             result = asyncio.run(operation_func(region='us-east-1'))
 
             # Verify error handling
@@ -707,7 +710,8 @@ class TestAWSToolGenerator(unittest.TestCase):
         generator.generate()
 
         # Verify client_getter was captured
-        self.assertIsNotNone(captured_client_getter)
+        assert captured_client_getter is not None
+
 
         # Call the client_getter with a different service_name parameter
         captured_client_getter('us-east-1', 'sns')
