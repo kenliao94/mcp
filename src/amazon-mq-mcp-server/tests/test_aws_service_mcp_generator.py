@@ -712,7 +712,6 @@ class TestAWSToolGenerator(unittest.TestCase):
         # Verify client_getter was captured
         assert captured_client_getter is not None
 
-
         # Call the client_getter with a different service_name parameter
         captured_client_getter('us-east-1', 'sns')
 
