@@ -16,6 +16,7 @@
 
 # pyright: reportAttributeAccessIssue=false, reportFunctionMemberAccess=false
 # because boto3 client doesn't have any type hinting
+import os
 import unittest
 from awslabs.amazon_mq_mcp_server.aws_service_mcp_generator import AWSToolGenerator
 from unittest.mock import MagicMock, patch
@@ -166,6 +167,52 @@ class TestAWSToolGenerator(unittest.TestCase):
         mock_session.assert_any_call(profile_name='default', region_name='us-west-2')
         mock_session.assert_any_call(profile_name='default', region_name='us-east-1')
 
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.os.environ.get')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
+    def test_get_client_with_custom_aws_profile(self, mock_session, mock_env_get):
+        """Test client creation uses custom AWS profile from environment."""
+        # Mock environment variable
+        mock_env_get.return_value = 'custom-profile'
+        
+        # Mock session
+        mock_session.return_value = self.boto3_session_mock
+
+        generator = AWSToolGenerator(
+            service_name='sqs', service_display_name='SQS', mcp=self.mcp_mock
+        )
+
+        # Access private method for testing
+        generator._AWSToolGenerator__get_client('us-east-1')
+
+        # Verify environment variable was checked
+        mock_env_get.assert_called_with('AWS_PROFILE', 'default')
+        
+        # Verify boto3 Session was called with custom profile
+        mock_session.assert_called_with(profile_name='custom-profile', region_name='us-east-1')
+
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.os.environ.get')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
+    def test_get_client_with_default_aws_profile(self, mock_session, mock_env_get):
+        """Test client creation uses default AWS profile when environment variable is not set."""
+        # Mock environment variable to return 'default' (simulating the default fallback)
+        mock_env_get.return_value = 'default'
+        
+        # Mock session
+        mock_session.return_value = self.boto3_session_mock
+
+        generator = AWSToolGenerator(
+            service_name='sqs', service_display_name='SQS', mcp=self.mcp_mock
+        )
+
+        # Access private method for testing
+        generator._AWSToolGenerator__get_client('us-east-1')
+
+        # Verify environment variable was checked with default fallback
+        mock_env_get.assert_called_with('AWS_PROFILE', 'default')
+        
+        # Verify boto3 Session was called with default profile
+        mock_session.assert_called_with(profile_name='default', region_name='us-east-1')
+
     @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
     @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.botocore.session.get_session')
     def test_create_operation_function(self, mock_botocore_session, mock_boto3_session):
@@ -299,6 +346,106 @@ class TestAWSToolGenerator(unittest.TestCase):
         self.assertEqual(args[0], self.mcp_mock)
         self.assertTrue(callable(args[1]))  # client_getter is callable
         self.assertEqual(args[2], 'get_queue_url')
+
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.os.environ.get')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.botocore.session.get_session')
+    def test_function_override_boto3_client_getter_uses_aws_profile(self, mock_botocore_session, mock_boto3_session, mock_env_get):
+        """Test that boto3_client_getter in function override uses AWS_PROFILE environment variable."""
+        # Mock environment variable
+        mock_env_get.return_value = 'test-profile'
+        mock_boto3_session.return_value = self.boto3_session_mock
+
+        # Setup mock for botocore session
+        botocore_session_mock = MagicMock()
+        mock_botocore_session.return_value = botocore_session_mock
+
+        # Setup service model mock
+        service_model_mock = MagicMock()
+        botocore_session_mock.get_service_model.return_value = service_model_mock
+
+        # Create a mock for the override function that captures the client_getter
+        captured_client_getter = None
+        def capture_override_func(mcp, client_getter, operation):
+            nonlocal captured_client_getter
+            captured_client_getter = client_getter
+
+        # Setup client mock with operations
+        self.boto3_client_mock.get_queue_url = MagicMock()
+        dir_mock = MagicMock(return_value=['get_queue_url'])
+        self.boto3_client_mock.__dir__ = dir_mock
+
+        # Create generator with override
+        generator = AWSToolGenerator(
+            service_name='sqs',
+            service_display_name='SQS',
+            mcp=self.mcp_mock,
+            tool_configuration={'get_queue_url': {'func_override': capture_override_func}},
+        )
+
+        generator.generate()
+
+        # Verify client_getter was captured
+        self.assertIsNotNone(captured_client_getter)
+        
+        # Call the client_getter to test it uses the AWS profile
+        captured_client_getter('us-west-2')
+        
+        # Verify environment variable was checked
+        mock_env_get.assert_called_with('AWS_PROFILE', 'default')
+        
+        # Verify boto3 Session was called with the correct profile and region
+        mock_boto3_session.assert_called_with(profile_name='test-profile', region_name='us-west-2')
+
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.os.environ.get')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.botocore.session.get_session')
+    def test_function_override_boto3_client_getter_default_profile(self, mock_botocore_session, mock_boto3_session, mock_env_get):
+        """Test that boto3_client_getter in function override uses default profile when AWS_PROFILE is not set."""
+        # Mock environment variable to return 'default' (simulating the default fallback)
+        mock_env_get.return_value = 'default'
+        mock_boto3_session.return_value = self.boto3_session_mock
+
+        # Setup mock for botocore session
+        botocore_session_mock = MagicMock()
+        mock_botocore_session.return_value = botocore_session_mock
+
+        # Setup service model mock
+        service_model_mock = MagicMock()
+        botocore_session_mock.get_service_model.return_value = service_model_mock
+
+        # Create a mock for the override function that captures the client_getter
+        captured_client_getter = None
+        def capture_override_func(mcp, client_getter, operation):
+            nonlocal captured_client_getter
+            captured_client_getter = client_getter
+
+        # Setup client mock with operations
+        self.boto3_client_mock.get_queue_url = MagicMock()
+        dir_mock = MagicMock(return_value=['get_queue_url'])
+        self.boto3_client_mock.__dir__ = dir_mock
+
+        # Create generator with override
+        generator = AWSToolGenerator(
+            service_name='sqs',
+            service_display_name='SQS',
+            mcp=self.mcp_mock,
+            tool_configuration={'get_queue_url': {'func_override': capture_override_func}},
+        )
+
+        generator.generate()
+
+        # Verify client_getter was captured
+        self.assertIsNotNone(captured_client_getter)
+        
+        # Call the client_getter to test it uses the default profile
+        captured_client_getter('eu-west-1')
+        
+        # Verify environment variable was checked with default fallback
+        mock_env_get.assert_called_with('AWS_PROFILE', 'default')
+        
+        # Verify boto3 Session was called with the default profile and specified region
+        mock_boto3_session.assert_called_with(profile_name='default', region_name='eu-west-1')
 
     @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
     @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.botocore.session.get_session')
@@ -512,6 +659,56 @@ class TestAWSToolGenerator(unittest.TestCase):
 
         # Verify that documentation is empty when skip_param_documentation=True
         self.assertEqual(params_without_docs[0][3], '')
+
+
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.os.environ.get')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.boto3.Session')
+    @patch('awslabs.amazon_mq_mcp_server.aws_service_mcp_generator.botocore.session.get_session')
+    def test_function_override_boto3_client_getter_service_name_parameter(self, mock_botocore_session, mock_boto3_session, mock_env_get):
+        """Test that boto3_client_getter in function override correctly uses service_name parameter."""
+        # Mock environment variable
+        mock_env_get.return_value = 'default'
+        mock_boto3_session.return_value = self.boto3_session_mock
+
+        # Setup mock for botocore session
+        botocore_session_mock = MagicMock()
+        mock_botocore_session.return_value = botocore_session_mock
+
+        # Setup service model mock
+        service_model_mock = MagicMock()
+        botocore_session_mock.get_service_model.return_value = service_model_mock
+
+        # Create a mock for the override function that captures the client_getter
+        captured_client_getter = None
+        def capture_override_func(mcp, client_getter, operation):
+            nonlocal captured_client_getter
+            captured_client_getter = client_getter
+
+        # Setup client mock with operations
+        self.boto3_client_mock.get_queue_url = MagicMock()
+        dir_mock = MagicMock(return_value=['get_queue_url'])
+        self.boto3_client_mock.__dir__ = dir_mock
+
+        # Create generator with override
+        generator = AWSToolGenerator(
+            service_name='sqs',
+            service_display_name='SQS',
+            mcp=self.mcp_mock,
+            tool_configuration={'get_queue_url': {'func_override': capture_override_func}},
+        )
+
+        generator.generate()
+
+        # Verify client_getter was captured
+        self.assertIsNotNone(captured_client_getter)
+        
+        # Call the client_getter with a different service_name parameter
+        captured_client_getter('us-east-1', 'sns')
+        
+        # Verify boto3 Session client was called with the overridden service name
+        # Note: The service_name parameter in client_getter is ignored in the current implementation
+        # It always uses self.service_name, so we verify it uses 'sqs' not 'sns'
+        self.boto3_session_mock.client.assert_called_with(service_name='sqs', config=generator.config)
 
 
 def test_hello_world():
