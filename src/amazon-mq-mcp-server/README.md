@@ -118,6 +118,8 @@ AWS_SESSION_TOKEN=<from the profile you set up>
   }
 ```
 
+You can also pull the public ECR image at public.ecr.aws/awslabs-mcp/awslabs/amazon-mq-mcp-server:latest
+
 #### Kiro
 
 At the project level `.kiro/settings/mcp.json`
