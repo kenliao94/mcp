@@ -186,7 +186,6 @@ def main():
     )
     generator.generate()
 
-    # print("Check if I should init the RabbitMQ", file=sys.stderr)
     if args.allow_rabbitmq_management:
         rmq_module = RabbitMQModule(mcp)
         rmq_module.register_rabbitmq_management_tools()
