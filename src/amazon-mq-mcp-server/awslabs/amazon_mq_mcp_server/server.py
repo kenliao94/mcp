@@ -17,10 +17,11 @@ from awslabs.amazon_mq_mcp_server.aws_service_mcp_generator import (
     AWSToolGenerator,
 )
 from awslabs.amazon_mq_mcp_server.consts import MCP_SERVER_VERSION
+from awslabs.amazon_mq_mcp_server.rabbitmq.module import RabbitMQModule
 from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, Optional
 
-
+import sys
 # override create_broker tool to tag resources
 def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, _: str):
     """Override broker creation behaviour."""
@@ -139,7 +140,12 @@ def main():
     parser.add_argument(
         '--allow-resource-creation',
         action='store_true',
-        help='Hide tools that create resources on user AWS account',
+        help='Enable tools that create resources on user AWS account',
+    )
+    parser.add_argument(
+        '--allow-rabbitmq-management',
+        action='store_true',
+        help='Enable tools that manage Amazon MQ for RabbitMQ brokers',
     )
     args = parser.parse_args()
 
@@ -179,6 +185,11 @@ def main():
         tool_configuration=tool_configuration,
     )
     generator.generate()
+
+    # print("Check if I should init the RabbitMQ", file=sys.stderr)
+    if args.allow_rabbitmq_management:
+        rmq_module = RabbitMQModule(mcp)
+        rmq_module.register_rabbitmq_management_tools()
 
     mcp.run()
 
