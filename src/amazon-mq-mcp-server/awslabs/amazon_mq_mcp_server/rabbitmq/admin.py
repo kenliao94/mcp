@@ -10,10 +10,10 @@ from typing import Dict, List, Optional
 class RabbitMQAdmin:
     """RabbitMQAdmin class provides API to call RabbitMQ APIs."""
 
-    def __init__(self, broker_id: str, region_name: str, username: str, password: str, use_tls: bool):
+    def __init__(self, hostname: str, username: str, password: str, use_tls: bool):
         """Initialize RabbitMQ admin client."""
         port = 15671
-        host = f"{broker_id}.mq.{region_name}.amazonaws.com"
+        host = hostname
         self.protocol = "https" if use_tls else "http"
         self.base_url = f"{self.protocol}://{host}:{port}/api"
         self.auth = base64.b64encode(f"{username}:{password}".encode()).decode()

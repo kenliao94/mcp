@@ -33,29 +33,25 @@ class RabbitMQModule:
 
         @self.mcp.tool()
         def initialize_connection_to_rabbitmq_broker(
-            broker_id: str,
-            broker_region: str,
+            broker_hostname: str,
             username: str,
             password: str,
         ) -> str:
             """Connect to a new RabbitMQ broker different from the initially configured one.
 
-            broker_id: The ID of the broker
-            broker_region: The region name of that broker. For example, us-east-1, us-west-2
+            broker_hostname: The hostname of the broker. For example, b-a9565a64-da39-4afc-9239-c43a9376b5ba.mq.us-east-1.on.aws, b-9560b8e1-3d33-4d91-9488-a3dc4a61dfe7.mq.us-east-1.amazonaws.com
             username: The username of user
             password: The password of user
             """
             try:
                 self.rmq = RabbitMQConnection(
-                    broker_id=broker_id,
-                    region_name=broker_region,
+                    hostname=broker_hostname,
                     username=username,
                     password=password,
                     use_tls=True,
                 )
                 self.rmq_admin = RabbitMQAdmin(
-                    broker_id=broker_id,
-                    region_name=broker_region,
+                    hostname=broker_hostname,
                     username=username,
                     password=password,
                     use_tls=True,

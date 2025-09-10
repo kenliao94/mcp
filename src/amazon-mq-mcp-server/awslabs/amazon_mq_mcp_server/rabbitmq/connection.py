@@ -8,10 +8,10 @@ import ssl
 class RabbitMQConnection:
     """RabbitMQ connection manager for message operations."""
 
-    def __init__(self, broker_id: str, region_name: str, username: str, password: str, use_tls: bool):
+    def __init__(self, hostname: str, username: str, password: str, use_tls: bool):
         """Initialize RabbitMQ connection parameters."""
         port = 5671
-        host = f"{broker_id}.mq.{region_name}.amazonaws.com"
+        host = hostname
         self.protocol = "amqps" if use_tls else "amqp"
         self.url = f"{self.protocol}://{username}:{password}@{host}:{port}"
         self.parameters = pika.URLParameters(self.url)

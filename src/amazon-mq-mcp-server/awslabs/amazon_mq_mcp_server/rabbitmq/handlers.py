@@ -6,6 +6,10 @@ from .connection import RabbitMQConnection
 from typing import List
 
 
+################################################
+######      RabbitMQ AMQP handlers        ######
+################################################
+
 def handle_enqueue(rabbitmq: RabbitMQConnection, queue: str, message: str):
     """Send a message to a RabbitMQ queue."""
     connection, channel = rabbitmq.get_channel()
@@ -21,11 +25,11 @@ def handle_fanout(rabbitmq: RabbitMQConnection, exchange: str, message: str):
     channel.basic_publish(exchange=exchange, routing_key="", body=message)
     connection.close()
 
+################################################
+######      RabbitMQ admin handlers       ######
+################################################
 
-def handle_topic(rabbitmq: RabbitMQConnection, topic: str, message: str):
-    """Handle topic-based message routing."""
-    pass
-
+## Queues
 
 def handle_list_queues(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
     """List all queue names in the RabbitMQ server."""
@@ -37,6 +41,21 @@ def handle_list_queues_by_vhost(rabbitmq_admin: RabbitMQAdmin, vhost: str = "/")
     """List all queue names in a specific vhost."""
     result = rabbitmq_admin.list_queues_by_vhost(vhost)
     return [queue["name"] for queue in result]
+
+
+def handle_get_queue_info(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "/") -> dict:
+    """Get detailed information about a specific queue."""
+    return rabbitmq_admin.get_queue_info(queue, vhost)
+
+
+def handle_delete_queue(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "/") -> None:
+    """Delete a queue from the RabbitMQ server."""
+    rabbitmq_admin.delete_queue(queue, vhost)
+
+
+def handle_purge_queue(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "/") -> None:
+    """Remove all messages from a queue."""
+    rabbitmq_admin.purge_queue(queue, vhost)
 
 
 def handle_list_exchanges(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
@@ -55,21 +74,6 @@ def handle_list_vhosts(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
     """List all vhost names in the RabbitMQ server."""
     result = rabbitmq_admin.list_vhosts()
     return [vhost["name"] for vhost in result]
-
-
-def handle_get_queue_info(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "/") -> dict:
-    """Get detailed information about a specific queue."""
-    return rabbitmq_admin.get_queue_info(queue, vhost)
-
-
-def handle_delete_queue(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "/") -> None:
-    """Delete a queue from the RabbitMQ server."""
-    rabbitmq_admin.delete_queue(queue, vhost)
-
-
-def handle_purge_queue(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "/") -> None:
-    """Remove all messages from a queue."""
-    rabbitmq_admin.purge_queue(queue, vhost)
 
 
 def handle_delete_exchange(rabbitmq_admin: RabbitMQAdmin, exchange: str, vhost: str = "/") -> None:

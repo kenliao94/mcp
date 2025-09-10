@@ -21,7 +21,7 @@ from awslabs.amazon_mq_mcp_server.rabbitmq.module import RabbitMQModule
 from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, Optional
 
-import sys
+
 # override create_broker tool to tag resources
 def create_broker_override(mcp: FastMCP, mq_client_getter: BOTO3_CLIENT_GETTER, _: str):
     """Override broker creation behaviour."""
