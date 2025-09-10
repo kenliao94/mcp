@@ -188,7 +188,8 @@ def main():
 
     if args.allow_rabbitmq_management:
         rmq_module = RabbitMQModule(mcp)
-        rmq_module.register_rabbitmq_management_tools()
+        allow_mutative_tools = args.allow_resource_creation if args.allow_resource_creation else False
+        rmq_module.register_rabbitmq_management_tools(allow_mutative_tools)
 
     mcp.run()
 

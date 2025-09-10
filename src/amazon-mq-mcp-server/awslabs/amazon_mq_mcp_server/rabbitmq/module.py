@@ -28,65 +28,48 @@ class RabbitMQModule:
         self.rmq: RabbitMQConnection | None = None
         self.rmq_admin: RabbitMQAdmin | None = None
 
-    def register_rabbitmq_management_tools(self):
+    def register_rabbitmq_management_tools(self, allow_mutative_tools: bool = False):
         """Install RabbitMQ tools to the MCP server."""
 
         @self.mcp.tool()
         def initialize_connection_to_rabbitmq_broker(
-            rabbitmq_host: str,
-            rabbitmq_port: str,
-            rabbitmq_username: str,
-            rabbitmq_password: str,
-            rabbitmq_use_ttl: bool,
-            rabbitmq_api_port: int = 15671,
+            broker_id: str,
+            broker_region: str,
+            username: str,
+            password: str,
         ) -> str:
-            """Connect to a new RabbitMQ broker different from the initially configured one."""
+            """Connect to a new RabbitMQ broker different from the initially configured one.
+
+            broker_id: The ID of the broker
+            broker_region: The region name of that broker. For example, us-east-1, us-west-2
+            username: The username of user
+            password: The password of user
+            """
             try:
                 self.rmq = RabbitMQConnection(
-                    host=rabbitmq_host,
-                    port=rabbitmq_port,
-                    username=rabbitmq_username,
-                    password=rabbitmq_password,
-                    use_tls=rabbitmq_use_ttl,
+                    broker_id=broker_id,
+                    region_name=broker_region,
+                    username=username,
+                    password=password,
+                    use_tls=True,
                 )
                 self.rmq_admin = RabbitMQAdmin(
-                    host=rabbitmq_host,
-                    port=rabbitmq_api_port,
-                    username=rabbitmq_username,
-                    password=rabbitmq_password,
-                    use_tls=rabbitmq_use_ttl,
+                    broker_id=broker_id,
+                    region_name=broker_region,
+                    username=username,
+                    password=password,
+                    use_tls=True,
                 )
 
                 return "successfully connected"
             except Exception as e:
                 raise e
 
-        @self.mcp.tool()
-        def enqueue(queue: str, message: str) -> str:
-            """Enqueue a message to a queue hosted on RabbitMQ."""
-            validate_rabbitmq_name(queue, "Queue name")
-            try:
-                handle_enqueue(self.rmq, queue, message)
-                return "Message successfully enqueued"
-            except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to enqueue message: {e}"
+        self.__register_read_only_tools()
+        if allow_mutative_tools:
+            self.__register_mutative_tools()
 
-        @self.mcp.tool()
-        def fanout(exchange: str, message: str) -> str:
-            """Publish a message to an exchange with fanout type."""
-            validate_rabbitmq_name(exchange, "Exchange name")
-            try:
-                handle_fanout(self.rmq, exchange, message)
-                return "Message successfully published to exchange"
-            except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to publish message: {e}"
-
-        @self.mcp.tool()
-        def publish(topic: str, message: str):
-            raise NotImplementedError()
-
+    def __register_read_only_tools(self):
         @self.mcp.tool()
         def list_queues() -> str:
             """List all the queues in the broker."""
@@ -149,6 +132,61 @@ class RabbitMQModule:
                 return f"Failed to get queue info: {e}"
 
         @self.mcp.tool()
+        def get_exchange_info(exchange: str, vhost: str = "/") -> str:
+            """Get detailed information about a specific exchange."""
+            try:
+                validate_rabbitmq_name(exchange, "Exchange name")
+                result = handle_get_exchange_info(self.rmq_admin, exchange, vhost)
+                return str(result)
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to get exchange info: {e}"
+
+        @self.mcp.tool()
+        def list_shovels() -> str:
+            """Get detailed information about shovels in the RabbitMQ broker."""
+            try:
+                result = handle_list_shovels(self.rmq_admin)
+                return str(result)
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to get exchange info: {e}"
+
+        @self.mcp.tool()
+        def get_shovel_info(name: str, vhost: str = "/") -> str:
+            """Get detailed information about specific shovel by name that is in a selected virtual host (vhost) in the RabbitMQ broker."""
+            try:
+                result = handle_shovel(self.rmq_admin, name, vhost)
+                return str(result)
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to get exchange info: {e}"
+
+    def __register_mutative_tools(self):
+        @self.mcp.tool()
+        def enqueue(queue: str, message: str) -> str:
+            """Enqueue a message to a queue hosted on RabbitMQ."""
+            validate_rabbitmq_name(queue, "Queue name")
+            try:
+                handle_enqueue(self.rmq, queue, message)
+                return "Message successfully enqueued"
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to enqueue message: {e}"
+
+        @self.mcp.tool()
+        def fanout(exchange: str, message: str) -> str:
+            """Publish a message to an exchange with fanout type."""
+            validate_rabbitmq_name(exchange, "Exchange name")
+            try:
+                handle_fanout(self.rmq, exchange, message)
+                return "Message successfully published to exchange"
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to publish message: {e}"
+
+
+        @self.mcp.tool()
         def delete_queue(queue: str, vhost: str = "/") -> str:
             """Delete a specific queue."""
             try:
@@ -180,34 +218,3 @@ class RabbitMQModule:
             except Exception as e:
                 self.logger.error(f"{e}")
                 return f"Failed to delete exchange: {e}"
-
-        @self.mcp.tool()
-        def get_exchange_info(exchange: str, vhost: str = "/") -> str:
-            """Get detailed information about a specific exchange."""
-            try:
-                validate_rabbitmq_name(exchange, "Exchange name")
-                result = handle_get_exchange_info(self.rmq_admin, exchange, vhost)
-                return str(result)
-            except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get exchange info: {e}"
-
-        @self.mcp.tool()
-        def list_shovels() -> str:
-            """Get detailed information about shovels in the RabbitMQ broker."""
-            try:
-                result = handle_list_shovels(self.rmq_admin)
-                return str(result)
-            except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get exchange info: {e}"
-
-        @self.mcp.tool()
-        def get_shovel_info(name: str, vhost: str = "/") -> str:
-            """Get detailed information about specific shovel by name that is in a selected virtual host (vhost) in the RabbitMQ broker."""
-            try:
-                result = handle_shovel(self.rmq_admin, name, vhost)
-                return str(result)
-            except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get exchange info: {e}"
