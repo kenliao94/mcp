@@ -57,6 +57,7 @@ def handle_purge_queue(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "
     """Remove all messages from a queue."""
     rabbitmq_admin.purge_queue(queue, vhost)
 
+## Exchanges
 
 def handle_list_exchanges(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
     """List all exchange names in the RabbitMQ server."""
@@ -70,12 +71,6 @@ def handle_list_exchanges_by_vhost(rabbitmq_admin: RabbitMQAdmin, vhost: str = "
     return [queue["name"] for queue in result]
 
 
-def handle_list_vhosts(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
-    """List all vhost names in the RabbitMQ server."""
-    result = rabbitmq_admin.list_vhosts()
-    return [vhost["name"] for vhost in result]
-
-
 def handle_delete_exchange(rabbitmq_admin: RabbitMQAdmin, exchange: str, vhost: str = "/") -> None:
     """Delete an exchange from the RabbitMQ server."""
     rabbitmq_admin.delete_exchange(exchange, vhost)
@@ -87,6 +82,15 @@ def handle_get_exchange_info(
     """Get detailed information about a specific exchange."""
     return rabbitmq_admin.get_exchange_info(exchange, vhost)
 
+## Vhosts
+
+def handle_list_vhosts(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
+    """List all vhost names in the RabbitMQ server."""
+    result = rabbitmq_admin.list_vhosts()
+    return [vhost["name"] for vhost in result]
+
+
+## Shovels
 
 def handle_list_shovels(rabbitmq_admin: RabbitMQAdmin) -> List[dict]:
     """List all shovels in the RabbitMQ server."""
