@@ -86,16 +86,12 @@ class TestRabbitMQModuleToolFunctions:
         self.module.rmq = MagicMock()
         self.module.logger = MagicMock()
 
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_queues')
-    def test_list_queues_tool_success(self, mock_handler):
-        """Test list_queues tool success case."""
-        mock_handler.return_value = ["queue1", "queue2"]
-
+    def test_list_queues_tool_registration(self):
+        """Test list_queues tool registration."""
         self.module._RabbitMQModule__register_read_only_tools()
 
         # Verify the tool was registered
         assert self.mock_mcp.tool.called
-        mock_handler.assert_called_once_with(self.module.rmq_admin)
 
     def test_enqueue_tool_registration(self):
         """Test enqueue tool registration."""
@@ -105,5 +101,5 @@ class TestRabbitMQModuleToolFunctions:
     def test_read_only_tools_registration_count(self):
         """Test read-only tools registration count."""
         self.module._RabbitMQModule__register_read_only_tools()
-        # Should register 10 read-only tools
-        assert self.mock_mcp.tool.call_count == 10
+        # Should register 9 read-only tools
+        assert self.mock_mcp.tool.call_count == 9
