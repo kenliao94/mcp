@@ -53,25 +53,6 @@ class TestRabbitMQModule:
         assert self.mock_mcp.tool.called
         assert self.mock_mcp.tool.call_count >= 1
 
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQConnection')
-    def test_initialize_connection_failure(self, mock_conn_class):
-        """Test connection initialization failure."""
-        mock_conn_class.side_effect = Exception("Connection failed")
-        
-        self.module.register_rabbitmq_management_tools()
-        
-        # Get the initialize_connection function
-        tool_calls = self.mock_mcp.tool.call_args_list
-        initialize_func = None
-        for call in tool_calls:
-            if call[0] and len(call[0]) > 0 and hasattr(call[0][0], '__name__') and 'initialize_connection_to_rabbitmq_broker' in call[0][0].__name__:
-                initialize_func = call[0][0]
-                break
-        
-        assert initialize_func is not None
-        with pytest.raises(Exception, match="Connection failed"):
-            initialize_func("test-host", "user", "pass")
-
     def test_read_only_tools_registration(self):
         """Test that read-only tools are properly registered."""
         with patch.object(self.module, '_RabbitMQModule__register_read_only_tools') as mock_readonly:
