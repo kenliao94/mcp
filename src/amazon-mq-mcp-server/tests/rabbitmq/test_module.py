@@ -123,20 +123,16 @@ class TestRabbitMQModuleToolExecution:
         """Test connection initialization and tool execution paths."""
         mock_handle.return_value = [{"name": "queue1"}]
         mock_handle.side_effect = [Exception("API error"), [{"name": "queue1"}]]
-        
         # Test successful connection
         self.module.register_rabbitmq_management_tools()
-        
         # Test exception handling in connection
         mock_conn_class.side_effect = Exception("Connection failed")
         try:
             self.module.register_rabbitmq_management_tools()
         except:
             pass
-        
         # Test read-only tools execution paths
         self.module._RabbitMQModule__register_read_only_tools()
-        
         # Test mutative tools execution paths  
         self.module._RabbitMQModule__register_mutative_tools()
 
@@ -163,10 +159,8 @@ class TestRabbitMQModuleToolExecution:
         mock_exchange_info.return_value = {"name": "exchange1", "type": "fanout"}
         mock_shovels.return_value = [{"name": "shovel1"}]
         mock_shovel.return_value = {"name": "shovel1"}
-        
         # Test success paths by registering tools
         self.module._RabbitMQModule__register_read_only_tools()
-        
         # Test error paths
         mock_queues.side_effect = Exception("API error")
         mock_queues_vhost.side_effect = Exception("API error")
@@ -177,7 +171,6 @@ class TestRabbitMQModuleToolExecution:
         mock_exchange_info.side_effect = Exception("API error")
         mock_shovels.side_effect = Exception("API error")
         mock_shovel.side_effect = Exception("API error")
-        
         # Register tools again to test error paths
         self.module._RabbitMQModule__register_read_only_tools()
 
@@ -191,13 +184,11 @@ class TestRabbitMQModuleToolExecution:
         """Test all mutative tool execution paths."""
         # Test success paths
         self.module._RabbitMQModule__register_mutative_tools()
-        
         # Test error paths
         mock_enqueue.side_effect = Exception("Connection error")
         mock_fanout.side_effect = Exception("Connection error")
         mock_delete_queue.side_effect = Exception("API error")
         mock_purge_queue.side_effect = Exception("API error")
         mock_delete_exchange.side_effect = Exception("API error")
-        
         # Register tools again to test error paths
         self.module._RabbitMQModule__register_mutative_tools()
