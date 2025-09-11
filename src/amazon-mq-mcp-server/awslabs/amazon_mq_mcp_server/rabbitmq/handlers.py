@@ -3,8 +3,22 @@
 
 from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection
+from pathlib import Path
 from typing import List
 
+
+################################################
+######      RabbitMQ doc handlers         ######
+################################################
+
+def get_general_best_practices():
+    """Get the general best practices for setting up RabbitMQ."""
+    script_dir = Path(__file__).parent
+    content = (script_dir / "doc" / "connection_best_practice.md").read_text()
+    content = content + "\n\n" + (script_dir / "doc" / "message_durability_best_practice.md").read_text()
+    content = content + "\n\n" + (script_dir / "doc" / "network_resilience_and_monitoring_best_practice.md").read_text()
+
+    return content
 
 ################################################
 ######      RabbitMQ AMQP handlers        ######

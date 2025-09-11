@@ -1,6 +1,7 @@
 from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection, validate_rabbitmq_name
 from .handlers import (
+    get_general_best_practices,
     handle_delete_exchange,
     handle_delete_queue,
     handle_enqueue,
@@ -157,6 +158,16 @@ class RabbitMQModule:
             except Exception as e:
                 self.logger.error(f"{e}")
                 return f"Failed to get exchange info: {e}"
+
+        @self.mcp.tool()
+        def get_rabbitmq_general_best_practice() -> str:
+            """Get the general best practices for deploying RabbitMQ on Amazon MQ."""
+            try:
+                result = get_general_best_practices()
+                return str(result)
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to get RabbitMQ general best practices: {e}"
 
     def __register_mutative_tools(self):
         @self.mcp.tool()

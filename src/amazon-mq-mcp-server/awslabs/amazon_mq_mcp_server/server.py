@@ -142,11 +142,6 @@ def main():
         action='store_true',
         help='Enable tools that create resources on user AWS account',
     )
-    parser.add_argument(
-        '--allow-rabbitmq-management',
-        action='store_true',
-        help='Enable tools that manage Amazon MQ for RabbitMQ brokers',
-    )
     args = parser.parse_args()
 
     tool_configuration = {
@@ -186,10 +181,9 @@ def main():
     )
     generator.generate()
 
-    if args.allow_rabbitmq_management:
-        rmq_module = RabbitMQModule(mcp)
-        allow_mutative_tools = args.allow_resource_creation if args.allow_resource_creation else False
-        rmq_module.register_rabbitmq_management_tools(allow_mutative_tools)
+    rmq_module = RabbitMQModule(mcp)
+    allow_mutative_tools = args.allow_resource_creation if args.allow_resource_creation else False
+    rmq_module.register_rabbitmq_management_tools(allow_mutative_tools)
 
     mcp.run()
 
