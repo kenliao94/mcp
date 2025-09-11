@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
+from awslabs.amazon_mq_mcp_server.rabbitmq.connection import (
+    RabbitMQConnection,
+    validate_rabbitmq_name,
+)
 from unittest.mock import MagicMock, patch
-import ssl
-from awslabs.amazon_mq_mcp_server.rabbitmq.connection import RabbitMQConnection, validate_rabbitmq_name
 
 
 class TestRabbitMQConnection:
@@ -13,7 +15,6 @@ class TestRabbitMQConnection:
     def test_init_with_tls(self):
         """Test initialization with TLS enabled."""
         conn = RabbitMQConnection("test-host", "user", "pass", True)
-        
         assert conn.protocol == "amqps"
         assert conn.url == "amqps://user:pass@test-host:5671"
         assert conn.parameters.ssl_options is not None
@@ -21,7 +22,6 @@ class TestRabbitMQConnection:
     def test_init_without_tls(self):
         """Test initialization with TLS disabled."""
         conn = RabbitMQConnection("test-host", "user", "pass", False)
-        
         assert conn.protocol == "amqp"
         assert conn.url == "amqp://user:pass@test-host:5671"
 
@@ -32,10 +32,8 @@ class TestRabbitMQConnection:
         mock_channel = MagicMock()
         mock_connection.channel.return_value = mock_channel
         mock_connection_class.return_value = mock_connection
-        
         conn = RabbitMQConnection("test-host", "user", "pass", False)
         connection, channel = conn.get_channel()
-        
         assert connection == mock_connection
         assert channel == mock_channel
         mock_connection_class.assert_called_once_with(conn.parameters)
@@ -54,7 +52,6 @@ class TestValidateRabbitMQName:
         """Test empty name validation."""
         with pytest.raises(ValueError, match="test cannot be empty"):
             validate_rabbitmq_name("", "test")
-        
         with pytest.raises(ValueError, match="test cannot be empty"):
             validate_rabbitmq_name("   ", "test")
 

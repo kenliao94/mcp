@@ -96,8 +96,8 @@ class TestRabbitMQModuleToolFunctions:
         tool_calls = self.mock_mcp.tool.call_args_list
         list_queues_func = None
         for call in tool_calls:
-            if hasattr(call[0][0], '__name__') and 'list_queues' in call[0][0].__name__:
-                list_queues_func = call[0][0]
+            if call.args and hasattr(call.args[0], '__name__') and 'list_queues' in call.args[0].__name__:
+                list_queues_func = call.args[0]
                 break
 
         assert list_queues_func is not None
@@ -115,8 +115,8 @@ class TestRabbitMQModuleToolFunctions:
         tool_calls = self.mock_mcp.tool.call_args_list
         enqueue_func = None
         for call in tool_calls:
-            if hasattr(call[0][0], '__name__') and 'enqueue' in call[0][0].__name__:
-                enqueue_func = call[0][0]
+            if call.args and hasattr(call.args[0], '__name__') and 'enqueue' in call.args[0].__name__:
+                enqueue_func = call.args[0]
                 break
 
         assert enqueue_func is not None
@@ -136,8 +136,8 @@ class TestRabbitMQModuleToolFunctions:
         tool_calls = self.mock_mcp.tool.call_args_list
         enqueue_func = None
         for call in tool_calls:
-            if hasattr(call[0][0], '__name__') and 'enqueue' in call[0][0].__name__:
-                enqueue_func = call[0][0]
+            if call.args and hasattr(call.args[0], '__name__') and 'enqueue' in call.args[0].__name__:
+                enqueue_func = call.args[0]
                 break
 
         assert enqueue_func is not None
