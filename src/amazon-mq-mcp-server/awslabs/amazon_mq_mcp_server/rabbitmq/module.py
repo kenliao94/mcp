@@ -1,20 +1,20 @@
 from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection, validate_rabbitmq_name
 from .handlers import (
-    get_general_best_practices,
     handle_delete_exchange,
     handle_delete_queue,
-    handle_enqueue,
-    handle_fanout,
     handle_get_cluster_nodes,
     handle_get_exchange_info,
+    handle_get_general_best_practices,
     handle_get_queue_info,
+    handle_is_broker_in_alarm,
+    handle_is_node_in_quorum_critical,
     handle_list_connections,
+    handle_list_consumers,
     handle_list_exchanges,
-    handle_list_exchanges_by_vhost,
     handle_list_queues,
-    handle_list_queues_by_vhost,
     handle_list_shovels,
+    handle_list_users,
     handle_list_vhosts,
     handle_purge_queue,
     handle_shovel,
@@ -101,74 +101,67 @@ class RabbitMQModule:
         def rabbitmq_broker_get_best_practices() -> str:
             """Get the general best practices for deploying RabbitMQ on Amazon MQ."""
             try:
-                result = get_general_best_practices()
+                result = handle_get_general_best_practices()
                 return str(result)
             except Exception as e:
                 raise e
 
     def __register_read_only_tools(self):
         @self.mcp.tool()
-        def rabbitmq_broker_list_queues() -> str:
+        def rabbitmq_broker_list_queues() -> dict:
             """List all the queues in the broker."""
             try:
-                result = handle_list_queues(self.rmq_admin)
-                return str(result)
+                return handle_list_queues(self.rmq_admin)
             except Exception as e:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_list_exchanges() -> str:
+        def rabbitmq_broker_list_exchanges() -> dict:
             """List all the exchanges in the broker."""
             try:
-                result = handle_list_exchanges(self.rmq_admin)
-                return str(result)
+                return handle_list_exchanges(self.rmq_admin)
             except Exception as e:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_list_vhosts() -> str:
+        def rabbitmq_broker_list_vhosts() -> dict:
             """List all the virtual hosts (vhosts) in the broker."""
             try:
-                result = handle_list_vhosts(self.rmq_admin)
-                return str(result)
+                return handle_list_vhosts(self.rmq_admin)
             except Exception as e:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_get_queue_info(queue: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_get_queue_info(queue: str, vhost: str = "/") -> dict:
             """Get detailed information about a specific queue."""
             try:
                 validate_rabbitmq_name(queue, "Queue name")
-                result = handle_get_queue_info(self.rmq_admin, queue, vhost)
-                return str(result)
+                return handle_get_queue_info(self.rmq_admin, queue, vhost)
             except Exception as e:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_get_exchange_info(exchange: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_get_exchange_info(exchange: str, vhost: str = "/") -> dict:
             """Get detailed information about a specific exchange."""
             try:
                 validate_rabbitmq_name(exchange, "Exchange name")
-                result = handle_get_exchange_info(self.rmq_admin, exchange, vhost)
-                return str(result)
+                return handle_get_exchange_info(self.rmq_admin, exchange, vhost)
             except Exception as e:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_list_shovels() -> str:
+        def rabbitmq_broker_list_shovels() -> dict:
             """Get detailed information about shovels in the RabbitMQ broker."""
             try:
-                result = handle_list_shovels(self.rmq_admin)
-                return str(result)
+                return handle_list_shovels(self.rmq_admin)
             except Exception as e:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_get_shovel_info(name: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_get_shovel_info(name: str, vhost: str = "/") -> dict:
             """Get detailed information about specific shovel by name that is in a selected virtual host (vhost) in the RabbitMQ broker."""
             try:
-                result = handle_shovel(self.rmq_admin, name, vhost)
-                return str(result)
+                return handle_shovel(self.rmq_admin, name, vhost)
             except Exception as e:
                 raise e
 
@@ -176,8 +169,7 @@ class RabbitMQModule:
         def rabbitmq_broker_get_cluster_nodes_info() -> dict:
             """Get the list of nodes and their info in the cluster."""
             try:
-                result = handle_get_cluster_nodes(self.rmq_admin)
-                return result
+                return handle_get_cluster_nodes(self.rmq_admin)
             except Exception as e:
                 raise e
 
@@ -185,8 +177,39 @@ class RabbitMQModule:
         def rabbitmq_broker_list_connections() -> dict:
             """List all connections on the RabbitMQ broker."""
             try:
-                result = handle_list_connections(self.rmq_admin)
-                return result
+                return handle_list_connections(self.rmq_admin)
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
+        def rabbitmq_broker_list_consumers() -> dict:
+            """List all consumers on the RabbitMQ broker."""
+            try:
+                return handle_list_consumers(self.rmq_admin)
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
+        def rabbitmq_broker_list_users() -> dict:
+            """List all users on the RabbitMQ broker."""
+            try:
+                return handle_list_users(self.rmq_admin)
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
+        def rabbitmq_broker_is_in_alarm() -> bool:
+            """Check if the RabbitMQ broker is in alarm."""
+            try:
+                return handle_is_broker_in_alarm(self.rmq_admin)
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
+        def rabbitmq_broker_is_quorum_critical() -> bool:
+            """Check if there are quorum queues with minimum online quorum."""
+            try:
+                return handle_is_node_in_quorum_critical(self.rmq_admin)
             except Exception as e:
                 raise e
 

@@ -12,7 +12,7 @@ from typing import List
 ######      RabbitMQ doc handlers         ######
 ################################################
 
-def get_general_best_practices():
+def handle_get_general_best_practices():
     """Get the general best practices for setting up RabbitMQ."""
     script_dir = Path(__file__).parent
     content = (script_dir / "doc" / "connection_best_practice.md").read_text()
@@ -50,6 +50,16 @@ def handle_get_overview(rabbitmq_admin: RabbitMQAdmin) -> dict:
     """Get the overview of the broker deployment."""
     return rabbitmq_admin.get_overview()
 
+def handle_is_broker_in_alarm(rabbitmq_admin: RabbitMQAdmin) -> bool:
+    """Check the alarm status of the RabbitMQ broker."""
+    status = rabbitmq_admin.get_alarm_status()
+    return False if status == 200 else True
+
+def handle_is_node_in_quorum_critical(rabbitmq_admin: RabbitMQAdmin) -> bool:
+    """Check if there are quorum queues with minimum online quorum."""
+    status = rabbitmq_admin.get_is_node_quorum_critical()
+    return False if status == 200 else True
+
 ## Connections
 
 def handle_list_connections(rabbitmq_admin: RabbitMQAdmin) -> dict:
@@ -65,6 +75,10 @@ def handle_list_connections(rabbitmq_admin: RabbitMQAdmin) -> dict:
         })
 
     return filtered_conn
+
+def handle_list_consumers(rabbitmq_admin: RabbitMQAdmin) -> dict:
+    """List all consumers on the RabbitMQ broker."""
+    return rabbitmq_admin.list_consumers()
 
 ## Cluster
 
@@ -166,3 +180,9 @@ def handle_list_shovels(rabbitmq_admin: RabbitMQAdmin) -> List[dict]:
 def handle_shovel(rabbitmq_admin: RabbitMQAdmin, shovel_name: str, vhost: str = "/") -> dict:
     """Get detailed information about a specific shovel."""
     return rabbitmq_admin.get_shovel_info(shovel_name, vhost)
+
+## Users
+
+def handle_list_users(rabbitmq_admin: RabbitMQAdmin) -> dict:
+    """List all users on the RabbitMQ broker."""
+    return rabbitmq_admin.list_users()

@@ -138,3 +138,23 @@ class RabbitMQAdmin:
         """List all connections on the RabbitMQ broker."""
         response = self._make_request("GET", "connections")
         return response.json()
+
+    def list_consumers(self) -> dict:
+        """List all consumers on the RabbitMQ broker."""
+        response = self._make_request("GET", "consumers")
+        return response.json()
+
+    def list_users(self) -> dict:
+        """List all users on the RabbitMQ broker."""
+        response = self._make_request("GET", "users")
+        return response.json()
+
+    def get_alarm_status(self) -> int:
+        """Get the alarm status of the RabbitMQ broker."""
+        response = self._make_request("GET", "health/checks/alarms")
+        return response.status_code
+
+    def get_is_node_quorum_critical(self) -> int:
+        """Check if there are quorum queues with minimum online quorum."""
+        response = self._make_request("GET", "checks/node-is-quorum-critical")
+        return response.status_code
