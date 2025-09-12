@@ -8,8 +8,8 @@ from .handlers import (
     handle_fanout,
     handle_get_cluster_nodes,
     handle_get_exchange_info,
-    handle_get_overview,
     handle_get_queue_info,
+    handle_list_connections,
     handle_list_exchanges,
     handle_list_exchanges_by_vhost,
     handle_list_queues,
@@ -104,8 +104,7 @@ class RabbitMQModule:
                 result = get_general_best_practices()
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get RabbitMQ general best practices: {e}"
+                raise e
 
     def __register_read_only_tools(self):
         @self.mcp.tool()
@@ -115,8 +114,7 @@ class RabbitMQModule:
                 result = handle_list_queues(self.rmq_admin)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to list queues: {e}"
+                raise e
 
         @self.mcp.tool()
         def list_queues_by_vhost(vhost: str = "/") -> str:
@@ -125,8 +123,7 @@ class RabbitMQModule:
                 result = handle_list_queues_by_vhost(self.rmq_admin, vhost)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get queue info: {e}"
+                raise e
 
         @self.mcp.tool()
         def list_exchanges() -> str:
@@ -135,8 +132,7 @@ class RabbitMQModule:
                 result = handle_list_exchanges(self.rmq_admin)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to list exchanges: {e}"
+                raise e
 
         @self.mcp.tool()
         def list_vhosts() -> str:
@@ -145,8 +141,7 @@ class RabbitMQModule:
                 result = handle_list_vhosts(self.rmq_admin)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to list virtual hosts: {e}"
+                raise e
 
         @self.mcp.tool()
         def list_exchanges_by_vhost(vhost: str = "/") -> str:
@@ -155,8 +150,7 @@ class RabbitMQModule:
                 result = handle_list_exchanges_by_vhost(self.rmq_admin, vhost)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to list exchanges: {e}"
+                raise e
 
         @self.mcp.tool()
         def get_queue_info(queue: str, vhost: str = "/") -> str:
@@ -166,8 +160,7 @@ class RabbitMQModule:
                 result = handle_get_queue_info(self.rmq_admin, queue, vhost)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get queue info: {e}"
+                raise e
 
         @self.mcp.tool()
         def get_exchange_info(exchange: str, vhost: str = "/") -> str:
@@ -177,8 +170,7 @@ class RabbitMQModule:
                 result = handle_get_exchange_info(self.rmq_admin, exchange, vhost)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get exchange info: {e}"
+                raise e
 
         @self.mcp.tool()
         def list_shovels() -> str:
@@ -187,8 +179,7 @@ class RabbitMQModule:
                 result = handle_list_shovels(self.rmq_admin)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get exchange info: {e}"
+                raise e
 
         @self.mcp.tool()
         def get_shovel_info(name: str, vhost: str = "/") -> str:
@@ -197,27 +188,25 @@ class RabbitMQModule:
                 result = handle_shovel(self.rmq_admin, name, vhost)
                 return str(result)
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get exchange info: {e}"
+                raise e
 
         @self.mcp.tool()
-        def get_rabbitmq_broker_overview() -> dict:
-            """Get the overview of a RabbitMQ broker."""
-            try:
-                result = handle_get_overview(self.rmq_admin)
-                return result
-            except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to get overview: {e}"
-
-        @self.mcp.tool()
-        def get_rabbitmq_cluster_node_list() -> dict:
-            """Get the list of node in the cluster."""
+        def get_rabbitmq_cluster_nodes_info() -> dict:
+            """Get the list of nodes and their info in the cluster."""
             try:
                 result = handle_get_cluster_nodes(self.rmq_admin)
                 return result
             except Exception as e:
-                return f"Failed to get the list of nodes in the cluster: {e}"
+                raise e
+
+        @self.mcp.tool()
+        def list_rabbitmq_connection() -> dict:
+            """List all connections on the RabbitMQ broker."""
+            try:
+                result = handle_list_connections(self.rmq_admin)
+                return result
+            except Exception as e:
+                raise e
 
     def __register_mutative_tools(self):
         @self.mcp.tool()
@@ -228,8 +217,7 @@ class RabbitMQModule:
                 handle_enqueue(self.rmq, queue, message)
                 return "Message successfully enqueued"
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to enqueue message: {e}"
+                raise e
 
         @self.mcp.tool()
         def fanout_message(exchange: str, message: str) -> str:
@@ -239,8 +227,7 @@ class RabbitMQModule:
                 handle_fanout(self.rmq, exchange, message)
                 return "Message successfully published to exchange"
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to publish message: {e}"
+                raise e
 
 
         @self.mcp.tool()
@@ -251,8 +238,7 @@ class RabbitMQModule:
                 handle_delete_queue(self.rmq_admin, queue, vhost)
                 return f"Queue {queue} successfully deleted"
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to delete queue: {e}"
+                raise e
 
         @self.mcp.tool()
         def purge_queue(queue: str, vhost: str = "/") -> str:
@@ -262,8 +248,7 @@ class RabbitMQModule:
                 handle_purge_queue(self.rmq_admin, queue, vhost)
                 return f"Queue {queue} successfully purged"
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to purge queue: {e}"
+                raise e
 
         @self.mcp.tool()
         def delete_exchange(exchange: str, vhost: str = "/") -> str:
@@ -273,5 +258,4 @@ class RabbitMQModule:
                 handle_delete_exchange(self.rmq_admin, exchange, vhost)
                 return f"Exchange {exchange} successfully deleted"
             except Exception as e:
-                self.logger.error(f"{e}")
-                return f"Failed to delete exchange: {e}"
+                raise e

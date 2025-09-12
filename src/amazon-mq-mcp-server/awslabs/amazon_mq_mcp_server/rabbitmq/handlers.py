@@ -5,6 +5,7 @@ from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection
 from pathlib import Path
 from typing import List
+from datetime import datetime
 
 
 ################################################
@@ -45,29 +46,53 @@ def handle_fanout(rabbitmq: RabbitMQConnection, exchange: str, message: str):
 
 ## Health check
 
-def handle_get_overview(rabbitmq_admin: RabbitMQAdmin) -> str:
+def handle_get_overview(rabbitmq_admin: RabbitMQAdmin) -> dict:
     """Get the overview of the broker deployment."""
-    result = rabbitmq_admin.get_overview()
-    return result
+    return rabbitmq_admin.get_overview()
+
+## Connections
+
+def handle_list_connections(rabbitmq_admin: RabbitMQAdmin) -> dict:
+    """List all connections on the RabbitMQ broker."""
+    filtered_conn = []
+    for c in rabbitmq_admin.list_connections():
+        filtered_conn.append({
+            "auth_mechanism": c["auth_mechanism"],
+            "num_channels": c["channels"],
+            "client_properties": c["client_properties"],
+            "connected_at": datetime.fromtimestamp(c["connected_at"] / 1000).strftime('%Y-%m-%d %H:%M:%S'),
+            "state": c["state"],
+        })
+
+    return filtered_conn
 
 ## Cluster
 
-def handle_get_cluster_nodes(rabbitmq_admin: RabbitMQAdmin) -> str:
+def handle_get_cluster_nodes(rabbitmq_admin: RabbitMQAdmin) -> list[dict]:
     """Get the names of nodes in the cluster."""
-    result = rabbitmq_admin.get_cluster_nodes()
-    return result
+    filtered_result = []
+    for r in rabbitmq_admin.get_cluster_nodes():
+        filtered_result.append({
+            "name": r["name"],
+            "mem_alarm": r["mem_alarm"],
+            "disk_free_alarm": r["disk_free_alarm"],
+            "disk_free_in_bytes": r["disk_free"],
+            "mem_limit_in_bytes": r["mem_limit"],
+            "mem_used_in_bytes": r["mem_used"],
+            "mem_used_in_percentage": (r["mem_used"] / r["mem_limit"]) * 100,
+            "rates_mode": r["rates_mode"],
+            "uptime_in_milli_seconds": r["uptime"],
+            "running": r["running"],
+            "num_queue_created": r["queue_created"],
+            "num_queue_deleted": r["queue_deleted"],
+            "connection_created": r["connection_created"],
+        })
 
+    return filtered_result
 
-def handle_get_cluster_node_info(rabbitmq_admin: RabbitMQAdmin, node_name: str) ->str:
+def handle_get_cluster_node_memory(rabbitmq_admin: RabbitMQAdmin, node_name: str) -> dict:
     """Get the information about a node in the cluster."""
-    result = rabbitmq_admin.get_node_information(node_name=node_name)
-    return result
-
-
-def handle_get_cluster_node_memory(rabbitmq_admin: RabbitMQAdmin, node_name: str) ->str:
-    """Get the information about a node in the cluster."""
-    result = rabbitmq_admin.get_node_memory(node_name=node_name)
-    return result
+    return rabbitmq_admin.get_node_memory(node_name=node_name)
 
 
 ## Queues

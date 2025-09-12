@@ -4,7 +4,7 @@
 import base64
 import requests
 from .connection import validate_rabbitmq_name
-from typing import Dict, List, Optional
+from typing import Optional
 
 
 # https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v4.0.7/deps/rabbitmq_management/priv/www/api/index.html
@@ -21,7 +21,7 @@ class RabbitMQAdmin:
         self.headers = {"Authorization": f"Basic {self.auth}", "Content-Type": "application/json"}
 
     def _make_request(
-        self, method: str, endpoint: str, data: Optional[Dict] = None
+        self, method: str, endpoint: str, data: Optional[dict] = None
     ) -> requests.Response:
         """Make HTTP request to RabbitMQ API."""
         url = f"{self.base_url}/{endpoint}"
@@ -29,29 +29,29 @@ class RabbitMQAdmin:
         response.raise_for_status()
         return response
 
-    def list_queues(self) -> List[Dict]:
+    def list_queues(self) -> list[dict]:
         """List all queues in the RabbitMQ server."""
         response = self._make_request("GET", "queues")
         return response.json()
 
-    def list_queues_by_vhost(self, vhost: str = "/") -> List[Dict]:
+    def list_queues_by_vhost(self, vhost: str = "/") -> list[dict]:
         """List all queues in the RabbitMQ server for a specific vhost."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         response = self._make_request("GET", f"queues/{vhost_encoded}")
         return response.json()
 
-    def list_exchanges(self) -> List[Dict]:
+    def list_exchanges(self) -> list[dict]:
         """List all exchanges in the RabbitMQ server."""
         response = self._make_request("GET", "exchanges")
         return response.json()
 
-    def list_exchanges_by_vhost(self, vhost: str = "/") -> List[Dict]:
+    def list_exchanges_by_vhost(self, vhost: str = "/") -> list[dict]:
         """List all exchanges in the RabbitMQ server for a specific vhost."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         response = self._make_request("GET", f"exchanges/{vhost_encoded}")
         return response.json()
 
-    def get_queue_info(self, queue: str, vhost: str = "/") -> Dict:
+    def get_queue_info(self, queue: str, vhost: str = "/") -> dict:
         """Get detailed information about a specific queue."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         response = self._make_request("GET", f"queues/{vhost_encoded}/{queue}")
@@ -69,7 +69,7 @@ class RabbitMQAdmin:
         vhost_encoded = requests.utils.quote(vhost, safe="")
         self._make_request("DELETE", f"queues/{vhost_encoded}/{queue}/contents")
 
-    def get_exchange_info(self, exchange: str, vhost: str = "/") -> Dict:
+    def get_exchange_info(self, exchange: str, vhost: str = "/") -> dict:
         """Get detailed information about a specific exchange."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         response = self._make_request("GET", f"exchanges/{vhost_encoded}/{exchange}")
@@ -83,7 +83,7 @@ class RabbitMQAdmin:
 
     def get_bindings(
         self, queue: Optional[str] = None, exchange: Optional[str] = None, vhost: str = "/"
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get bindings, optionally filtered by queue or exchange."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         if queue:
@@ -98,38 +98,43 @@ class RabbitMQAdmin:
             response = self._make_request("GET", f"bindings/{vhost_encoded}")
         return response.json()
 
-    def get_overview(self) -> Dict:
+    def get_overview(self) -> dict:
         """Get overview of RabbitMQ server including version, stats, and listeners."""
         response = self._make_request("GET", "overview")
         return response.json()
 
-    def list_vhosts(self) -> Dict:
+    def list_vhosts(self) -> dict:
         """List all vhost in the RabbitMQ server."""
         response = self._make_request("GET", "vhosts")
         return response.json()
 
-    def list_shovels(self) -> List[Dict]:
+    def list_shovels(self) -> list[dict]:
         """List all shovels in the RabbitMQ server."""
         response = self._make_request("GET", "shovels")
         return response.json()
 
-    def get_shovel_info(self, shovel_name: str, vhost: str = "/") -> Dict:
+    def get_shovel_info(self, shovel_name: str, vhost: str = "/") -> dict:
         """Get detailed information about a specific shovel in a vhost."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         response = self._make_request("GET", f"parameters/shovel/{vhost_encoded}/{shovel_name}")
         return response.json()
 
-    def get_cluster_nodes(self) -> Dict:
+    def get_cluster_nodes(self) -> dict:
         """Get a list of nodes in the RabbitMQ cluster."""
         response = self._make_request("GET", "nodes")
         return response.json()
 
-    def get_node_information(self, node_name: str) -> Dict:
+    def get_node_information(self, node_name: str) -> dict:
         """Get a node information."""
-        response = self._make_request("GET", f"/nodes/{node_name}")
+        response = self._make_request("GET", f"nodes/{node_name}")
         return response.json()
 
-    def get_node_memory(self, node_name: str) -> Dict:
+    def get_node_memory(self, node_name: str) -> dict:
         """Get a node memory usage breakdown information."""
-        response = self._make_request("GET", f"/nodes/{node_name}/memory")
+        response = self._make_request("GET", f"nodes/{node_name}/memory")
+        return response.json()
+
+    def list_connections(self) -> dict:
+        """List all connections on the RabbitMQ broker."""
+        response = self._make_request("GET", "connections")
         return response.json()
