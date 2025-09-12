@@ -6,7 +6,9 @@ from .handlers import (
     handle_delete_queue,
     handle_enqueue,
     handle_fanout,
+    handle_get_cluster_nodes,
     handle_get_exchange_info,
+    handle_get_overview,
     handle_get_queue_info,
     handle_list_exchanges,
     handle_list_exchanges_by_vhost,
@@ -31,14 +33,19 @@ class RabbitMQModule:
 
     def register_rabbitmq_management_tools(self, allow_mutative_tools: bool = False):
         """Install RabbitMQ tools to the MCP server."""
+        self.__register_critical_tools()
+        self.__register_read_only_tools()
+        if allow_mutative_tools:
+            self.__register_mutative_tools()
 
+    def __register_critical_tools(self):
         @self.mcp.tool()
         def initialize_connection_to_rabbitmq_broker(
             broker_hostname: str,
             username: str,
             password: str,
         ) -> str:
-            """Connect to a new RabbitMQ broker different from the initially configured one.
+            """Connect to a new RabbitMQ broker.
 
             broker_hostname: The hostname of the broker. For example, b-a9565a64-da39-4afc-9239-c43a9376b5ba.mq.us-east-1.on.aws, b-9560b8e1-3d33-4d91-9488-a3dc4a61dfe7.mq.us-east-1.amazonaws.com
             username: The username of user
@@ -62,9 +69,43 @@ class RabbitMQModule:
             except Exception as e:
                 raise e
 
-        self.__register_read_only_tools()
-        if allow_mutative_tools:
-            self.__register_mutative_tools()
+        @self.mcp.tool()
+        def initialize_connection_to_rabbitmq_broker_with_oauth(
+            broker_hostname: str,
+            oauth_token: str,
+        ) -> str:
+            """Connect to a new RabbitMQ broker using OAuth. It only applies to RabbitMQ broker which authentication strategy is config_managed.
+
+            broker_hostname: The hostname of the broker. For example, b-a9565a64-da39-4afc-9239-c43a9376b5ba.mq.us-east-1.on.aws, b-9560b8e1-3d33-4d91-9488-a3dc4a61dfe7.mq.us-east-1.amazonaws.com
+            oauth_token: A valid OAuth token obtained
+            """
+            try:
+                self.rmq = RabbitMQConnection(
+                    hostname=broker_hostname,
+                    username="",
+                    password=oauth_token,
+                    use_tls=True,
+                )
+                self.rmq_admin = RabbitMQAdmin(
+                    hostname=broker_hostname,
+                    username="",
+                    password=oauth_token,
+                    use_tls=True,
+                )
+
+                return "successfully connected"
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
+        def get_rabbitmq_general_best_practice() -> str:
+            """Get the general best practices for deploying RabbitMQ on Amazon MQ."""
+            try:
+                result = get_general_best_practices()
+                return str(result)
+            except Exception as e:
+                self.logger.error(f"{e}")
+                return f"Failed to get RabbitMQ general best practices: {e}"
 
     def __register_read_only_tools(self):
         @self.mcp.tool()
@@ -160,18 +201,27 @@ class RabbitMQModule:
                 return f"Failed to get exchange info: {e}"
 
         @self.mcp.tool()
-        def get_rabbitmq_general_best_practice() -> str:
-            """Get the general best practices for deploying RabbitMQ on Amazon MQ."""
+        def get_rabbitmq_broker_overview() -> dict:
+            """Get the overview of a RabbitMQ broker."""
             try:
-                result = get_general_best_practices()
-                return str(result)
+                result = handle_get_overview(self.rmq_admin)
+                return result
             except Exception as e:
                 self.logger.error(f"{e}")
-                return f"Failed to get RabbitMQ general best practices: {e}"
+                return f"Failed to get overview: {e}"
+
+        @self.mcp.tool()
+        def get_rabbitmq_cluster_node_list() -> dict:
+            """Get the list of node in the cluster."""
+            try:
+                result = handle_get_cluster_nodes(self.rmq_admin)
+                return result
+            except Exception as e:
+                return f"Failed to get the list of nodes in the cluster: {e}"
 
     def __register_mutative_tools(self):
         @self.mcp.tool()
-        def enqueue(queue: str, message: str) -> str:
+        def enqueue_message(queue: str, message: str) -> str:
             """Enqueue a message to a queue hosted on RabbitMQ."""
             validate_rabbitmq_name(queue, "Queue name")
             try:
@@ -182,7 +232,7 @@ class RabbitMQModule:
                 return f"Failed to enqueue message: {e}"
 
         @self.mcp.tool()
-        def fanout(exchange: str, message: str) -> str:
+        def fanout_message(exchange: str, message: str) -> str:
             """Publish a message to an exchange with fanout type."""
             validate_rabbitmq_name(exchange, "Exchange name")
             try:

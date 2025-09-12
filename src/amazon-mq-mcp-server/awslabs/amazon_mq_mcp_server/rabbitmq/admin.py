@@ -7,6 +7,7 @@ from .connection import validate_rabbitmq_name
 from typing import Dict, List, Optional
 
 
+# https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v4.0.7/deps/rabbitmq_management/priv/www/api/index.html
 class RabbitMQAdmin:
     """RabbitMQAdmin class provides API to call RabbitMQ APIs."""
 
@@ -116,4 +117,19 @@ class RabbitMQAdmin:
         """Get detailed information about a specific shovel in a vhost."""
         vhost_encoded = requests.utils.quote(vhost, safe="")
         response = self._make_request("GET", f"parameters/shovel/{vhost_encoded}/{shovel_name}")
+        return response.json()
+
+    def get_cluster_nodes(self) -> Dict:
+        """Get a list of nodes in the RabbitMQ cluster."""
+        response = self._make_request("GET", "nodes")
+        return response.json()
+
+    def get_node_information(self, node_name: str) -> Dict:
+        """Get a node information."""
+        response = self._make_request("GET", f"/nodes/{node_name}")
+        return response.json()
+
+    def get_node_memory(self, node_name: str) -> Dict:
+        """Get a node memory usage breakdown information."""
+        response = self._make_request("GET", f"/nodes/{node_name}/memory")
         return response.json()

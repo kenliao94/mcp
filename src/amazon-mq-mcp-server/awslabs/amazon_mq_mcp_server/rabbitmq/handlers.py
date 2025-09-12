@@ -43,6 +43,33 @@ def handle_fanout(rabbitmq: RabbitMQConnection, exchange: str, message: str):
 ######      RabbitMQ admin handlers       ######
 ################################################
 
+## Health check
+
+def handle_get_overview(rabbitmq_admin: RabbitMQAdmin) -> str:
+    """Get the overview of the broker deployment."""
+    result = rabbitmq_admin.get_overview()
+    return result
+
+## Cluster
+
+def handle_get_cluster_nodes(rabbitmq_admin: RabbitMQAdmin) -> str:
+    """Get the names of nodes in the cluster."""
+    result = rabbitmq_admin.get_cluster_nodes()
+    return result
+
+
+def handle_get_cluster_node_info(rabbitmq_admin: RabbitMQAdmin, node_name: str) ->str:
+    """Get the information about a node in the cluster."""
+    result = rabbitmq_admin.get_node_information(node_name=node_name)
+    return result
+
+
+def handle_get_cluster_node_memory(rabbitmq_admin: RabbitMQAdmin, node_name: str) ->str:
+    """Get the information about a node in the cluster."""
+    result = rabbitmq_admin.get_node_memory(node_name=node_name)
+    return result
+
+
 ## Queues
 
 def handle_list_queues(rabbitmq_admin: RabbitMQAdmin) -> List[str]:
