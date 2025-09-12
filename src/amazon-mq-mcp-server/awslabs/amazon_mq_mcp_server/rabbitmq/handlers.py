@@ -3,9 +3,9 @@
 
 from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection
+from datetime import datetime
 from pathlib import Path
 from typing import List
-from datetime import datetime
 
 
 ################################################

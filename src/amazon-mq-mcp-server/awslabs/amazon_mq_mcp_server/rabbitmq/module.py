@@ -40,7 +40,7 @@ class RabbitMQModule:
 
     def __register_critical_tools(self):
         @self.mcp.tool()
-        def initialize_connection_to_rabbitmq_broker(
+        def rabbimq_broker_initialize_connection(
             broker_hostname: str,
             username: str,
             password: str,
@@ -70,7 +70,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def initialize_connection_to_rabbitmq_broker_with_oauth(
+        def rabbimq_broker_initialize_connection_with_oauth(
             broker_hostname: str,
             oauth_token: str,
         ) -> str:
@@ -98,7 +98,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def get_rabbitmq_general_best_practice() -> str:
+        def rabbitmq_broker_get_best_practices() -> str:
             """Get the general best practices for deploying RabbitMQ on Amazon MQ."""
             try:
                 result = get_general_best_practices()
@@ -108,7 +108,7 @@ class RabbitMQModule:
 
     def __register_read_only_tools(self):
         @self.mcp.tool()
-        def list_queues() -> str:
+        def rabbitmq_broker_list_queues() -> str:
             """List all the queues in the broker."""
             try:
                 result = handle_list_queues(self.rmq_admin)
@@ -117,16 +117,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def list_queues_by_vhost(vhost: str = "/") -> str:
-            """List all the queues for a specific virtual host (vhost) in the broker."""
-            try:
-                result = handle_list_queues_by_vhost(self.rmq_admin, vhost)
-                return str(result)
-            except Exception as e:
-                raise e
-
-        @self.mcp.tool()
-        def list_exchanges() -> str:
+        def rabbitmq_broker_list_exchanges() -> str:
             """List all the exchanges in the broker."""
             try:
                 result = handle_list_exchanges(self.rmq_admin)
@@ -135,7 +126,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def list_vhosts() -> str:
+        def rabbitmq_broker_list_vhosts() -> str:
             """List all the virtual hosts (vhosts) in the broker."""
             try:
                 result = handle_list_vhosts(self.rmq_admin)
@@ -144,16 +135,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def list_exchanges_by_vhost(vhost: str = "/") -> str:
-            """List all the exchanges for a specific virtual host in the broker."""
-            try:
-                result = handle_list_exchanges_by_vhost(self.rmq_admin, vhost)
-                return str(result)
-            except Exception as e:
-                raise e
-
-        @self.mcp.tool()
-        def get_queue_info(queue: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_get_queue_info(queue: str, vhost: str = "/") -> str:
             """Get detailed information about a specific queue."""
             try:
                 validate_rabbitmq_name(queue, "Queue name")
@@ -163,7 +145,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def get_exchange_info(exchange: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_get_exchange_info(exchange: str, vhost: str = "/") -> str:
             """Get detailed information about a specific exchange."""
             try:
                 validate_rabbitmq_name(exchange, "Exchange name")
@@ -173,7 +155,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def list_shovels() -> str:
+        def rabbitmq_broker_list_shovels() -> str:
             """Get detailed information about shovels in the RabbitMQ broker."""
             try:
                 result = handle_list_shovels(self.rmq_admin)
@@ -182,7 +164,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def get_shovel_info(name: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_get_shovel_info(name: str, vhost: str = "/") -> str:
             """Get detailed information about specific shovel by name that is in a selected virtual host (vhost) in the RabbitMQ broker."""
             try:
                 result = handle_shovel(self.rmq_admin, name, vhost)
@@ -191,7 +173,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def get_rabbitmq_cluster_nodes_info() -> dict:
+        def rabbitmq_broker_get_cluster_nodes_info() -> dict:
             """Get the list of nodes and their info in the cluster."""
             try:
                 result = handle_get_cluster_nodes(self.rmq_admin)
@@ -200,7 +182,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def list_rabbitmq_connection() -> dict:
+        def rabbitmq_broker_list_connections() -> dict:
             """List all connections on the RabbitMQ broker."""
             try:
                 result = handle_list_connections(self.rmq_admin)
@@ -210,28 +192,7 @@ class RabbitMQModule:
 
     def __register_mutative_tools(self):
         @self.mcp.tool()
-        def enqueue_message(queue: str, message: str) -> str:
-            """Enqueue a message to a queue hosted on RabbitMQ."""
-            validate_rabbitmq_name(queue, "Queue name")
-            try:
-                handle_enqueue(self.rmq, queue, message)
-                return "Message successfully enqueued"
-            except Exception as e:
-                raise e
-
-        @self.mcp.tool()
-        def fanout_message(exchange: str, message: str) -> str:
-            """Publish a message to an exchange with fanout type."""
-            validate_rabbitmq_name(exchange, "Exchange name")
-            try:
-                handle_fanout(self.rmq, exchange, message)
-                return "Message successfully published to exchange"
-            except Exception as e:
-                raise e
-
-
-        @self.mcp.tool()
-        def delete_queue(queue: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_delete_queue(queue: str, vhost: str = "/") -> str:
             """Delete a specific queue."""
             try:
                 validate_rabbitmq_name(queue, "Queue name")
@@ -241,7 +202,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def purge_queue(queue: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_purge_queue(queue: str, vhost: str = "/") -> str:
             """Remove all messages from a specific queue."""
             try:
                 validate_rabbitmq_name(queue, "Queue name")
@@ -251,7 +212,7 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def delete_exchange(exchange: str, vhost: str = "/") -> str:
+        def rabbitmq_broker_delete_exchange(exchange: str, vhost: str = "/") -> str:
             """Delete a specific exchange."""
             try:
                 validate_rabbitmq_name(exchange, "Exchange name")
