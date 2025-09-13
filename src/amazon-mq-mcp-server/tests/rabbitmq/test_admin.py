@@ -182,69 +182,7 @@ class TestRabbitMQAdmin:
         result = self.admin.get_overview()
         assert result == {'rabbitmq_version': '3.8.0'}
         mock_request.assert_called_once_with('GET', 'overview')
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_get_cluster_nodes(self, mock_request):
-        """Test getting cluster nodes."""
-        mock_request.return_value.json.return_value = [{'name': 'node1'}]
-        result = self.admin.get_cluster_nodes()
-        assert result == [{'name': 'node1'}]
-        mock_request.assert_called_once_with('GET', 'nodes')
 
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_get_node_information(self, mock_request):
-        """Test getting node information."""
-        mock_request.return_value.json.return_value = {'name': 'node1', 'running': True}
-        result = self.admin.get_node_information('node1')
-        assert result == {'name': 'node1', 'running': True}
-        mock_request.assert_called_once_with('GET', 'nodes/node1')
-
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_get_node_memory(self, mock_request):
-        """Test getting node memory information."""
-        mock_request.return_value.json.return_value = {'memory': {'total': 1000}}
-        result = self.admin.get_node_memory('node1')
-        assert result == {'memory': {'total': 1000}}
-        mock_request.assert_called_once_with('GET', 'nodes/node1/memory')
-
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_list_connections(self, mock_request):
-        """Test listing connections."""
-        mock_request.return_value.json.return_value = [{'name': 'conn1'}]
-        result = self.admin.list_connections()
-        assert result == [{'name': 'conn1'}]
-        mock_request.assert_called_once_with('GET', 'connections')
-
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_list_consumers(self, mock_request):
-        """Test listing consumers."""
-        mock_request.return_value.json.return_value = [{'consumer_tag': 'tag1'}]
-        result = self.admin.list_consumers()
-        assert result == [{'consumer_tag': 'tag1'}]
-        mock_request.assert_called_once_with('GET', 'consumers')
-
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_list_users(self, mock_request):
-        """Test listing users."""
-        mock_request.return_value.json.return_value = [{'name': 'user1'}]
-        result = self.admin.list_users()
-        assert result == [{'name': 'user1'}]
-        mock_request.assert_called_once_with('GET', 'users')
-
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_get_alarm_status(self, mock_request):
-        """Test getting alarm status."""
-        mock_request.return_value.status_code = 200
-        result = self.admin.get_alarm_status()
-        assert result == 200
-        mock_request.assert_called_once_with('GET', 'health/checks/alarms')
-
-    @patch.object(RabbitMQAdmin, '_make_request')
-    def test_get_is_node_quorum_critical(self, mock_request):
-        """Test checking if node is quorum critical."""
-        mock_request.return_value.status_code = 200
-        result = self.admin.get_is_node_quorum_critical()
-        assert result == 200
-        mock_request.assert_called_once_with('GET', 'checks/node-is-quorum-critical')
     @patch.object(RabbitMQAdmin, '_make_request')
     def test_get_cluster_nodes(self, mock_request):
         """Test getting cluster nodes."""
