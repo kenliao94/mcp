@@ -19,13 +19,22 @@ from awslabs.amazon_mq_mcp_server.rabbitmq.handlers import (
     handle_delete_queue,
     handle_enqueue,
     handle_fanout,
+    handle_get_cluster_node_memory,
+    handle_get_cluster_nodes,
     handle_get_exchange_info,
+    handle_get_general_best_practices,
+    handle_get_overview,
     handle_get_queue_info,
+    handle_is_broker_in_alarm,
+    handle_is_node_in_quorum_critical,
+    handle_list_connections,
+    handle_list_consumers,
     handle_list_exchanges,
     handle_list_exchanges_by_vhost,
     handle_list_queues,
     handle_list_queues_by_vhost,
     handle_list_shovels,
+    handle_list_users,
     handle_list_vhosts,
     handle_purge_queue,
     handle_shovel,
@@ -182,3 +191,119 @@ class TestShovelHandlers:
         result = handle_shovel(mock_admin, 'test-shovel', '/')
         assert result == expected_info
         mock_admin.get_shovel_info.assert_called_once_with('test-shovel', '/')
+
+
+class TestDocHandlers:
+    """Tests for documentation handlers."""
+
+    def test_handle_get_general_best_practices(self):
+        """Test get general best practices handler."""
+        result = handle_get_general_best_practices()
+        assert isinstance(result, str)
+        assert len(result) > 0
+
+
+class TestHealthHandlers:
+    """Tests for health check handlers."""
+
+    def test_handle_get_overview(self):
+        """Test get overview handler."""
+        mock_admin = MagicMock()
+        expected_overview = {'rabbitmq_version': '3.8.0'}
+        mock_admin.get_overview.return_value = expected_overview
+        result = handle_get_overview(mock_admin)
+        assert result == expected_overview
+        mock_admin.get_overview.assert_called_once()
+
+    def test_handle_is_broker_in_alarm(self):
+        """Test broker alarm status handler."""
+        mock_admin = MagicMock()
+        mock_admin.get_alarm_status.return_value = 200
+        result = handle_is_broker_in_alarm(mock_admin)
+        assert result is False
+        mock_admin.get_alarm_status.assert_called_once()
+
+    def test_handle_is_node_in_quorum_critical(self):
+        """Test node quorum critical status handler."""
+        mock_admin = MagicMock()
+        mock_admin.get_is_node_quorum_critical.return_value = 200
+        result = handle_is_node_in_quorum_critical(mock_admin)
+        assert result is False
+        mock_admin.get_is_node_quorum_critical.assert_called_once()
+
+
+class TestConnectionHandlers:
+    """Tests for connection handlers."""
+
+    def test_handle_list_connections(self):
+        """Test list connections handler."""
+        mock_admin = MagicMock()
+        mock_admin.list_connections.return_value = [{
+            'auth_mechanism': 'PLAIN',
+            'channels': 1,
+            'client_properties': {},
+            'connected_at': 1609459200000,
+            'state': 'running'
+        }]
+        result = handle_list_connections(mock_admin)
+        assert len(result) == 1
+        assert result[0]['auth_mechanism'] == 'PLAIN'
+        mock_admin.list_connections.assert_called_once()
+
+    def test_handle_list_consumers(self):
+        """Test list consumers handler."""
+        mock_admin = MagicMock()
+        expected_consumers = [{'queue': 'test-queue'}]
+        mock_admin.list_consumers.return_value = expected_consumers
+        result = handle_list_consumers(mock_admin)
+        assert result == expected_consumers
+        mock_admin.list_consumers.assert_called_once()
+
+
+class TestClusterHandlers:
+    """Tests for cluster handlers."""
+
+    def test_handle_get_cluster_nodes(self):
+        """Test get cluster nodes handler."""
+        mock_admin = MagicMock()
+        mock_admin.get_cluster_nodes.return_value = [{
+            'name': 'node1',
+            'mem_alarm': False,
+            'disk_free_alarm': False,
+            'disk_free': 1000000,
+            'mem_limit': 2000000,
+            'mem_used': 1000000,
+            'rates_mode': 'basic',
+            'uptime': 3600000,
+            'running': True,
+            'queue_created': 5,
+            'queue_deleted': 1,
+            'connection_created': 10
+        }]
+        result = handle_get_cluster_nodes(mock_admin)
+        assert len(result) == 1
+        assert result[0]['name'] == 'node1'
+        assert result[0]['mem_used_in_percentage'] == 50.0
+        mock_admin.get_cluster_nodes.assert_called_once()
+
+    def test_handle_get_cluster_node_memory(self):
+        """Test get cluster node memory handler."""
+        mock_admin = MagicMock()
+        expected_memory = {'memory': {'total': 1000000}}
+        mock_admin.get_node_memory.return_value = expected_memory
+        result = handle_get_cluster_node_memory(mock_admin, 'node1')
+        assert result == expected_memory
+        mock_admin.get_node_memory.assert_called_once_with(node_name='node1')
+
+
+class TestUserHandlers:
+    """Tests for user handlers."""
+
+    def test_handle_list_users(self):
+        """Test list users handler."""
+        mock_admin = MagicMock()
+        expected_users = [{'name': 'admin'}]
+        mock_admin.list_users.return_value = expected_users
+        result = handle_list_users(mock_admin)
+        assert result == expected_users
+        mock_admin.list_users.assert_called_once()
