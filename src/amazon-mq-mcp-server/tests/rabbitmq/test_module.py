@@ -118,8 +118,8 @@ class TestRabbitMQModuleToolFunctions:
         # Verify the tool was registered
         assert self.mock_mcp.tool.called
 
-    def test_enqueue_tool_registration(self):
-        """Test enqueue tool registration."""
+    def test_mutative_tool_registration(self):
+        """Test mutative tool registration."""
         self.module._RabbitMQModule__register_mutative_tools()
         assert self.mock_mcp.tool.called
 
@@ -161,59 +161,16 @@ class TestRabbitMQModuleToolExecution:
         # Test mutative tools execution paths
         self.module._RabbitMQModule__register_mutative_tools()
 
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_queues')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_exchanges')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_vhosts')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_queue_info')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_exchange_info')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_shovels')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_shovel')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_cluster_nodes')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_connections')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_consumers')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_users')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_is_broker_in_alarm')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_is_node_in_quorum_critical')
-    def test_read_only_tools_execution_paths(
-        self,
-        mock_quorum_critical,
-        mock_broker_alarm,
-        mock_users,
-        mock_consumers,
-        mock_connections,
-        mock_cluster_nodes,
-        mock_shovel,
-        mock_shovels,
-        mock_exchange_info,
-        mock_queue_info,
-        mock_vhosts,
-        mock_exchanges,
-        mock_queues,
-    ):
+    def test_read_only_tools_execution_paths(self):
         """Test all read-only tool execution paths."""
-        # Set up success returns
-        mock_queues.return_value = [{'name': 'queue1'}]
-        mock_exchanges.return_value = [{'name': 'exchange1'}]
-        mock_vhosts.return_value = [{'name': '/'}]
-        mock_queue_info.return_value = {'name': 'queue1', 'messages': 5}
-        mock_exchange_info.return_value = {'name': 'exchange1', 'type': 'fanout'}
-        mock_shovels.return_value = [{'name': 'shovel1'}]
-        mock_shovel.return_value = {'name': 'shovel1'}
-        mock_cluster_nodes.return_value = [{'name': 'node1'}]
-        mock_connections.return_value = [{'name': 'conn1'}]
-        mock_consumers.return_value = [{'name': 'consumer1'}]
-        mock_users.return_value = [{'name': 'user1'}]
-        mock_broker_alarm.return_value = False
-        mock_quorum_critical.return_value = False
         # Test success paths by registering tools
         self.module._RabbitMQModule__register_read_only_tools()
+        # Verify tools were registered
+        assert self.mock_mcp.tool.called
 
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_delete_queue')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_purge_queue')
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_delete_exchange')
-    def test_mutative_tools_execution_paths(
-        self, mock_delete_exchange, mock_purge_queue, mock_delete_queue
-    ):
+    def test_mutative_tools_execution_paths(self):
         """Test all mutative tool execution paths."""
         # Test success paths by registering tools
         self.module._RabbitMQModule__register_mutative_tools()
+        # Verify tools were registered
+        assert self.mock_mcp.tool.called
