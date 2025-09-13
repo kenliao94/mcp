@@ -16,14 +16,14 @@ class TestRabbitMQConnection:
         """Test initialization with TLS enabled."""
         conn = RabbitMQConnection('test-host', 'user', 'pass', True)
         assert conn.protocol == 'amqps'
-        assert conn.url == 'amqps://user:pass@test-host:5671'  # `pragma: allowlist secret`
+        assert conn.url == 'amqps://user:pass@test-host:5671'  # pragma: allowlist secret
         assert conn.parameters.ssl_options is not None
 
     def test_init_without_tls(self):
         """Test initialization with TLS disabled."""
         conn = RabbitMQConnection('test-host', 'user', 'pass', False)
         assert conn.protocol == 'amqp'
-        assert conn.url == 'amqp://user:pass@test-host:5671'
+        assert conn.url == 'amqp://user:pass@test-host:5671'  # pragma: allowlist secret
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.connection.pika.BlockingConnection')
     def test_get_channel(self, mock_connection_class):
