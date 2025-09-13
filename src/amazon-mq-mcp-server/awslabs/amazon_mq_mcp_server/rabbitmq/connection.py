@@ -16,6 +16,7 @@
 
 import pika
 import ssl
+from typing import Any
 
 
 class RabbitMQConnection:
@@ -34,7 +35,7 @@ class RabbitMQConnection:
             ssl_context.set_ciphers('ECDHE+AESGCM:!ECDSA')
             self.parameters.ssl_options = pika.SSLOptions(context=ssl_context)
 
-    def get_channel(self) -> tuple[pika.BlockingConnection, pika.channel.Channel]:
+    def get_channel(self) -> tuple[Any, Any]:
         """Create and return a connection and channel for RabbitMQ operations."""
         connection = pika.BlockingConnection(self.parameters)
         channel = connection.channel()

@@ -18,7 +18,7 @@ from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
 
 ################################################
@@ -90,7 +90,7 @@ def handle_is_node_in_quorum_critical(rabbitmq_admin: RabbitMQAdmin) -> bool:
 ## Connections
 
 
-def handle_list_connections(rabbitmq_admin: RabbitMQAdmin) -> dict:
+def handle_list_connections(rabbitmq_admin: RabbitMQAdmin) -> list[Any]:
     """List all connections on the RabbitMQ broker."""
     filtered_conn = []
     for c in rabbitmq_admin.list_connections():
@@ -109,7 +109,7 @@ def handle_list_connections(rabbitmq_admin: RabbitMQAdmin) -> dict:
     return filtered_conn
 
 
-def handle_list_consumers(rabbitmq_admin: RabbitMQAdmin) -> dict:
+def handle_list_consumers(rabbitmq_admin: RabbitMQAdmin) -> list[dict]:
     """List all consumers on the RabbitMQ broker."""
     return rabbitmq_admin.list_consumers()
 
@@ -229,6 +229,6 @@ def handle_shovel(rabbitmq_admin: RabbitMQAdmin, shovel_name: str, vhost: str = 
 ## Users
 
 
-def handle_list_users(rabbitmq_admin: RabbitMQAdmin) -> dict:
+def handle_list_users(rabbitmq_admin: RabbitMQAdmin) -> list[dict]:
     """List all users on the RabbitMQ broker."""
     return rabbitmq_admin.list_users()

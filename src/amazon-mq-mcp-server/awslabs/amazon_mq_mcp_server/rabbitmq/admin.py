@@ -17,7 +17,8 @@
 import base64
 import requests
 from .connection import validate_rabbitmq_name
-from typing import Optional
+from typing import Any, Optional
+from urllib.parse import quote
 
 
 # https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v4.0.7/deps/rabbitmq_management/priv/www/api/index.html
@@ -49,7 +50,7 @@ class RabbitMQAdmin:
 
     def list_queues_by_vhost(self, vhost: str = '/') -> list[dict]:
         """List all queues in the RabbitMQ server for a specific vhost."""
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         response = self._make_request('GET', f'queues/{vhost_encoded}')
         return response.json()
 
@@ -60,45 +61,45 @@ class RabbitMQAdmin:
 
     def list_exchanges_by_vhost(self, vhost: str = '/') -> list[dict]:
         """List all exchanges in the RabbitMQ server for a specific vhost."""
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         response = self._make_request('GET', f'exchanges/{vhost_encoded}')
         return response.json()
 
     def get_queue_info(self, queue: str, vhost: str = '/') -> dict:
         """Get detailed information about a specific queue."""
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         response = self._make_request('GET', f'queues/{vhost_encoded}/{queue}')
         return response.json()
 
     def delete_queue(self, queue: str, vhost: str = '/') -> None:
         """Delete a queue."""
         validate_rabbitmq_name(queue, 'Queue name')
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         self._make_request('DELETE', f'queues/{vhost_encoded}/{queue}')
 
     def purge_queue(self, queue: str, vhost: str = '/') -> None:
         """Remove all messages from a queue."""
         validate_rabbitmq_name(queue, 'Queue name')
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         self._make_request('DELETE', f'queues/{vhost_encoded}/{queue}/contents')
 
     def get_exchange_info(self, exchange: str, vhost: str = '/') -> dict:
         """Get detailed information about a specific exchange."""
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         response = self._make_request('GET', f'exchanges/{vhost_encoded}/{exchange}')
         return response.json()
 
     def delete_exchange(self, exchange: str, vhost: str = '/') -> None:
         """Delete an exchange."""
         validate_rabbitmq_name(exchange, 'Exchange name')
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         self._make_request('DELETE', f'exchanges/{vhost_encoded}/{exchange}')
 
     def get_bindings(
         self, queue: Optional[str] = None, exchange: Optional[str] = None, vhost: str = '/'
     ) -> list[dict]:
         """Get bindings, optionally filtered by queue or exchange."""
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         if queue:
             validate_rabbitmq_name(queue, 'Queue name')
             response = self._make_request('GET', f'queues/{vhost_encoded}/{queue}/bindings')
@@ -128,7 +129,7 @@ class RabbitMQAdmin:
 
     def get_shovel_info(self, shovel_name: str, vhost: str = '/') -> dict:
         """Get detailed information about a specific shovel in a vhost."""
-        vhost_encoded = requests.utils.quote(vhost, safe='')
+        vhost_encoded = quote(vhost, safe='')
         response = self._make_request('GET', f'parameters/shovel/{vhost_encoded}/{shovel_name}')
         return response.json()
 
@@ -152,12 +153,12 @@ class RabbitMQAdmin:
         response = self._make_request('GET', 'connections')
         return response.json()
 
-    def list_consumers(self) -> dict:
+    def list_consumers(self) -> Any:
         """List all consumers on the RabbitMQ broker."""
         response = self._make_request('GET', 'consumers')
         return response.json()
 
-    def list_users(self) -> dict:
+    def list_users(self) -> Any:
         """List all users on the RabbitMQ broker."""
         response = self._make_request('GET', 'users')
         return response.json()
