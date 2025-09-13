@@ -34,9 +34,9 @@ public void publishPayload() {
     String prefix = S3_KEY_PREFIX;
     String s3Key = prefix + "/" + UUID.randomUUID();
     s3Client.putObject(PutObjectRequest.builder()
-        .bucket(S3_BUCKET).key(s3Key).build(), 
+        .bucket(S3_BUCKET).key(s3Key).build(),
         RequestBody.fromString(payload));
-    
+
     // Send the reference through RabbitMQ.
     Message message = new Message();
     message.s3Key = s3Key;
@@ -55,10 +55,10 @@ public void consumeMessage(Message message) {
     String payload = s3Client.getObjectAsBytes(GetObjectRequest.builder()
         .bucket(message.s3Bucket).key(message.s3Key).build())
         .asUtf8String();
-    
+
     // Process the complete message.
     processPayload(message, payload);
-    
+
     // Delete the S3 object.
     s3Client.deleteObject(DeleteObjectRequest.builder()
         .bucket(message.s3Bucket).key(message.s3Key).build());
@@ -80,9 +80,9 @@ With the above considerations in mind, we recommend always setting a pre-fetch v
 ###### Note
 
 *   If your client applications have configured to automatically acknowledge delivery of messages to consumers, setting a pre-fetch value will have no effect.
-    
+
 *   All pre-fetched messages are removed from the queue.
-    
+
 
 The following example desmonstrate setting a pre-fetch value of `10` for a single consumer using the RabbitMQ Java client library.
 
@@ -109,9 +109,9 @@ In the RabbitMQ Java client library, the default value for the `global` flag is 
 **For all Celery versions**
 
 1.  Turn off [`task_create_missing_queues`](https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_create_missing_queues) to mitigate queue churn.
-    
+
 2.  Then, turn off `worker_enable_remote_control` to stop dynamic creation of `celery@...pidbox` queues. This will reduce queue churn on the broker.
-    
+
 
 `worker_enable_remote_control = false` 3. To further reduce non-critical message activity, turn off Celery [worker-send-task-events](https://docs.celeryq.dev/en/stable/userguide/configuration.html#worker-send-task-events) by not including `-E` or `--task-events` flag when starting your Celery application.
 
@@ -122,10 +122,10 @@ In the RabbitMQ Java client library, the default value for the `global` flag is 
 **For Celery versions 5.5 and above**
 
 1.  Upgrade to [Celery version 5.5](https://docs.celeryq.dev/en/latest/changelog.html#version-5-5-0), the minimum version that supports quorum queues, or a later version. To check what version of Celery you are using, use `celery --version`. For more information on quorum queues, see [Quorum queues for RabbitMQ on Amazon MQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/quorum-queues.html).
-    
+
 2.  After upgrading to Celery 5.5 or later, configure `task_default_queue_type` to ["quorum"](https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_default_queue_type).
-    
+
 3.  Then, you must also turn on Publish Confirms in [Broker Transport Options](https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-broker_transport_options):
-    
+
 
 `broker_transport_options = {"confirm_publish": True}`
