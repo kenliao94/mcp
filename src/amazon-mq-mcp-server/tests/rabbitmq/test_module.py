@@ -14,6 +14,7 @@
 # This file is part of the awslabs namespace.
 # It is intentionally minimal to support PEP 420 namespace packages.
 
+import pytest
 from awslabs.amazon_mq_mcp_server.rabbitmq.module import RabbitMQModule
 from unittest.mock import MagicMock, patch
 
@@ -164,3 +165,88 @@ class TestRabbitMQModuleToolExecution:
         # Test success paths by registering tools
         self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
         assert self.mock_mcp.tool.called
+
+
+class TestRabbitMQBrokerInitializeConnection:
+    """Tests for rabbimq_broker_initialize_connection tool function."""
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQConnection')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQAdmin')
+    def test_rabbimq_broker_initialize_connection_success(self, mock_admin_class, mock_conn_class):
+        """Test successful broker connection initialization."""
+        mock_conn = MagicMock()
+        mock_admin = MagicMock()
+        mock_conn_class.return_value = mock_conn
+        mock_admin_class.return_value = mock_admin
+
+        # Capture the registered function
+        captured_func = None
+
+        def mock_tool():
+            def decorator(func):
+                nonlocal captured_func
+                if func.__name__ == 'rabbimq_broker_initialize_connection':
+                    captured_func = func
+                return func
+
+            return decorator
+
+        mock_mcp = MagicMock()
+        mock_mcp.tool = mock_tool
+        module = RabbitMQModule(mock_mcp)
+        module.register_rabbitmq_management_tools()
+
+        # Execute the captured function
+        result = captured_func(
+            broker_hostname='b-test.mq.us-east-1.amazonaws.com',
+            username='testuser',
+            password='testpass',
+        )
+
+        assert result == 'successfully connected'
+        assert module.rmq == mock_conn
+        assert module.rmq_admin == mock_admin
+
+        mock_conn_class.assert_called_once_with(
+            hostname='b-test.mq.us-east-1.amazonaws.com',
+            username='testuser',
+            password='testpass',
+            use_tls=True,
+        )
+        mock_admin_class.assert_called_once_with(
+            hostname='b-test.mq.us-east-1.amazonaws.com',
+            username='testuser',
+            password='testpass',
+            use_tls=True,
+        )
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQConnection')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQAdmin')
+    def test_rabbimq_broker_initialize_connection_failure(self, mock_admin_class, mock_conn_class):
+        """Test broker connection initialization failure."""
+        mock_conn_class.side_effect = Exception('Connection failed')
+
+        # Capture the registered function
+        captured_func = None
+
+        def mock_tool():
+            def decorator(func):
+                nonlocal captured_func
+                if func.__name__ == 'rabbimq_broker_initialize_connection':
+                    captured_func = func
+                return func
+
+            return decorator
+
+        mock_mcp = MagicMock()
+        mock_mcp.tool = mock_tool
+        module = RabbitMQModule(mock_mcp)
+        module.register_rabbitmq_management_tools()
+
+        # Execute the captured function and expect exception
+        with pytest.raises(Exception, match='Connection failed'):
+            captured_func(
+                broker_hostname='b-test.mq.us-east-1.amazonaws.com',
+                username='testuser',
+                password='testpass',
+            )
