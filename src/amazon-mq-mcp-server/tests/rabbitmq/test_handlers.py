@@ -238,13 +238,15 @@ class TestConnectionHandlers:
     def test_handle_list_connections(self):
         """Test list connections handler."""
         mock_admin = MagicMock()
-        mock_admin.list_connections.return_value = [{
-            'auth_mechanism': 'PLAIN',
-            'channels': 1,
-            'client_properties': {},
-            'connected_at': 1609459200000,
-            'state': 'running'
-        }]
+        mock_admin.list_connections.return_value = [
+            {
+                'auth_mechanism': 'PLAIN',
+                'channels': 1,
+                'client_properties': {},
+                'connected_at': 1609459200000,
+                'state': 'running',
+            }
+        ]
         result = handle_list_connections(mock_admin)
         assert len(result) == 1
         assert result[0]['auth_mechanism'] == 'PLAIN'
@@ -266,20 +268,22 @@ class TestClusterHandlers:
     def test_handle_get_cluster_nodes(self):
         """Test get cluster nodes handler."""
         mock_admin = MagicMock()
-        mock_admin.get_cluster_nodes.return_value = [{
-            'name': 'node1',
-            'mem_alarm': False,
-            'disk_free_alarm': False,
-            'disk_free': 1000000,
-            'mem_limit': 2000000,
-            'mem_used': 1000000,
-            'rates_mode': 'basic',
-            'uptime': 3600000,
-            'running': True,
-            'queue_created': 5,
-            'queue_deleted': 1,
-            'connection_created': 10
-        }]
+        mock_admin.get_cluster_nodes.return_value = [
+            {
+                'name': 'node1',
+                'mem_alarm': False,
+                'disk_free_alarm': False,
+                'disk_free': 1000000,
+                'mem_limit': 2000000,
+                'mem_used': 1000000,
+                'rates_mode': 'basic',
+                'uptime': 3600000,
+                'running': True,
+                'queue_created': 5,
+                'queue_deleted': 1,
+                'connection_created': 10,
+            }
+        ]
         result = handle_get_cluster_nodes(mock_admin)
         assert len(result) == 1
         assert result[0]['name'] == 'node1'

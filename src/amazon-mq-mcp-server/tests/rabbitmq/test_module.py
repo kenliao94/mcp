@@ -84,12 +84,12 @@ class TestRabbitMQModule:
         # Count tools registered with mutative disabled
         self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
         readonly_count = self.mock_mcp.tool.call_count
-        
+
         # Reset and count tools with mutative enabled
         self.mock_mcp.reset_mock()
         self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
         all_tools_count = self.mock_mcp.tool.call_count
-        
+
         # Should have more tools when mutative is enabled
         assert all_tools_count > readonly_count
 
