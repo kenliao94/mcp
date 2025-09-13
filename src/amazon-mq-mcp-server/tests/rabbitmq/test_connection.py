@@ -16,7 +16,7 @@ class TestRabbitMQConnection:
         """Test initialization with TLS enabled."""
         conn = RabbitMQConnection('test-host', 'user', 'pass', True)
         assert conn.protocol == 'amqps'
-        assert conn.url == 'amqps://user:pass@test-host:5671'
+        assert conn.url == 'amqps://user:pass@test-host:5671'  # `pragma: allowlist secret`
         assert conn.parameters.ssl_options is not None
 
     def test_init_without_tls(self):

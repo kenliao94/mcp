@@ -141,7 +141,7 @@ class TestRabbitMQModuleToolExecution:
         mock_conn_class.side_effect = Exception('Connection failed')
         try:
             self.module.register_rabbitmq_management_tools()
-        except:
+        except Exception:
             pass
         # Test read-only tools execution paths
         self.module._RabbitMQModule__register_read_only_tools()
