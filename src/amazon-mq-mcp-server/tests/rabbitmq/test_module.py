@@ -348,3 +348,327 @@ class TestRabbitMQBrokerGetBestPractices:
         
         with pytest.raises(Exception, match='Failed to get best practices'):
             func()
+
+
+class TestRabbitMQBrokerListQueues:
+    """Test class for RabbitMQ broker list queues functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_queues')
+    def test_rabbitmq_broker_list_queues_success(self, mock_handle):
+        """Test successful listing of RabbitMQ queues."""
+        mock_handle.return_value = ['queue1', 'queue2']
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_queues']
+        result = func()
+        
+        assert result == ['queue1', 'queue2']
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_queues_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_queues']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_queues')
+    def test_rabbitmq_broker_list_queues_failure(self, mock_handle):
+        """Test exception handling when listing queues fails."""
+        mock_handle.side_effect = Exception('Failed to list queues')
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_queues']
+        
+        with pytest.raises(Exception, match='Failed to list queues'):
+            func()
+
+
+class TestRabbitMQBrokerListExchanges:
+    """Test class for RabbitMQ broker list exchanges functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_exchanges')
+    def test_rabbitmq_broker_list_exchanges_success(self, mock_handle):
+        """Test successful listing of RabbitMQ exchanges."""
+        mock_handle.return_value = ['exchange1', 'exchange2']
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_exchanges']
+        result = func()
+        
+        assert result == ['exchange1', 'exchange2']
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_exchanges_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_exchanges']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_exchanges')
+    def test_rabbitmq_broker_list_exchanges_failure(self, mock_handle):
+        """Test exception handling when listing exchanges fails."""
+        mock_handle.side_effect = Exception('Failed to list exchanges')
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_exchanges']
+        
+        with pytest.raises(Exception, match='Failed to list exchanges'):
+            func()
+
+
+class TestRabbitMQBrokerListVhosts:
+    """Test class for RabbitMQ broker list vhosts functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_vhosts')
+    def test_rabbitmq_broker_list_vhosts_success(self, mock_handle):
+        """Test successful listing of RabbitMQ vhosts."""
+        mock_handle.return_value = ['/', 'vhost1']
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_vhosts']
+        result = func()
+        
+        assert result == ['/', 'vhost1']
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_vhosts_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_vhosts']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_vhosts')
+    def test_rabbitmq_broker_list_vhosts_failure(self, mock_handle):
+        """Test exception handling when listing vhosts fails."""
+        mock_handle.side_effect = Exception('Failed to list vhosts')
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_vhosts']
+        
+        with pytest.raises(Exception, match='Failed to list vhosts'):
+            func()
+
+class TestRabbitMQBrokerGetQueueInfo:
+    """Test class for RabbitMQ broker get queue info functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_queue_info')
+    def test_rabbitmq_broker_get_queue_info_success(self, mock_handle, mock_validate):
+        """Test successful retrieval of queue info."""
+        mock_handle.return_value = {'name': 'test-queue', 'messages': 10}
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_get_queue_info']
+        result = func('test-queue', '/')
+        
+        assert result == {'name': 'test-queue', 'messages': 10}
+        mock_validate.assert_called_once_with('test-queue', 'Queue name')
+        mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-queue', '/')
+
+    def test_rabbitmq_broker_get_queue_info_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_get_queue_info']
+        
+        with pytest.raises(AssertionError):
+            func('test-queue')
+
+
+class TestRabbitMQBrokerGetExchangeInfo:
+    """Test class for RabbitMQ broker get exchange info functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_exchange_info')
+    def test_rabbitmq_broker_get_exchange_info_success(self, mock_handle, mock_validate):
+        """Test successful retrieval of exchange info."""
+        mock_handle.return_value = {'name': 'test-exchange', 'type': 'direct'}
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_get_exchange_info']
+        result = func('test-exchange', '/')
+        
+        assert result == {'name': 'test-exchange', 'type': 'direct'}
+        mock_validate.assert_called_once_with('test-exchange', 'Exchange name')
+        mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-exchange', '/')
+
+    def test_rabbitmq_broker_get_exchange_info_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_get_exchange_info']
+        
+        with pytest.raises(AssertionError):
+            func('test-exchange')
+
+
+class TestRabbitMQBrokerListShovels:
+    """Test class for RabbitMQ broker list shovels functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_shovels')
+    def test_rabbitmq_broker_list_shovels_success(self, mock_handle):
+        """Test successful listing of shovels."""
+        mock_handle.return_value = ['shovel1', 'shovel2']
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_shovels']
+        result = func()
+        
+        assert result == ['shovel1', 'shovel2']
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_shovels_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_shovels']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+
+class TestRabbitMQBrokerGetShovelInfo:
+    """Test class for RabbitMQ broker get shovel info functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_shovel')
+    def test_rabbitmq_broker_get_shovel_info_success(self, mock_handle):
+        """Test successful retrieval of shovel info."""
+        mock_handle.return_value = {'name': 'test-shovel', 'state': 'running'}
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_get_shovel_info']
+        result = func('test-shovel', '/')
+        
+        assert result == {'name': 'test-shovel', 'state': 'running'}
+        mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-shovel', '/')
+
+    def test_rabbitmq_broker_get_shovel_info_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_get_shovel_info']
+        
+        with pytest.raises(AssertionError):
+            func('test-shovel')
+
+
+class TestRabbitMQBrokerGetClusterNodesInfo:
+    """Test class for RabbitMQ broker get cluster nodes info functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_cluster_nodes')
+    def test_rabbitmq_broker_get_cluster_nodes_info_success(self, mock_handle):
+        """Test successful retrieval of cluster nodes info."""
+        mock_handle.return_value = [{'name': 'node1', 'running': True}]
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_get_cluster_nodes_info']
+        result = func()
+        
+        assert result == [{'name': 'node1', 'running': True}]
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_get_cluster_nodes_info_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_get_cluster_nodes_info']
+        
+        with pytest.raises(AssertionError):
+            func()
