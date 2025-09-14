@@ -74,7 +74,7 @@ class TestRabbitMQModule:
 
         Verifies that read-only tools are properly registered via private method.
         """
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
         # Verify that read-only tools are registered
         assert self.mock_mcp.tool.called
 
@@ -83,7 +83,7 @@ class TestRabbitMQModule:
 
         Verifies that mutative tools are properly registered via private method.
         """
-        self.module._RabbitMQModule__register_mutative_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
         # Verify that mutative tools are registered
         assert self.mock_mcp.tool.called
 
@@ -113,7 +113,7 @@ class TestRabbitMQModuleToolFunctions:
 
         Verifies the list_queues tool is included in read-only tool registration.
         """
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
         # Verify that the list_queues tool is registered
         assert self.mock_mcp.tool.called
 
@@ -122,7 +122,7 @@ class TestRabbitMQModuleToolFunctions:
 
         Verifies that mutative tools are registered correctly.
         """
-        self.module._RabbitMQModule__register_mutative_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
         # Verify that mutative tools are registered
         assert self.mock_mcp.tool.called
 
@@ -131,7 +131,7 @@ class TestRabbitMQModuleToolFunctions:
 
         Verifies that multiple read-only tools are registered (count > 0).
         """
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
         # Verify the number of read-only tools registered
         assert self.mock_mcp.tool.call_count > 0
 
@@ -177,7 +177,7 @@ class TestRabbitMQModuleToolExecution:
         Ensures read-only tools can be executed without errors.
         """
         # Test that read-only tools can be executed without errors
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
         assert self.mock_mcp.tool.called
 
     def test_mutative_tools_execution_paths(self):
@@ -186,7 +186,7 @@ class TestRabbitMQModuleToolExecution:
         Ensures mutative tools can be executed without errors.
         """
         # Test that mutative tools can be executed without errors
-        self.module._RabbitMQModule__register_mutative_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
         assert self.mock_mcp.tool.called
 
 
@@ -207,7 +207,7 @@ class TestRabbitMQBrokerInitializeConnection:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_critical_tools()
+        self.module.register_rabbitmq_management_tools()
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQConnection')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQAdmin')
@@ -272,7 +272,7 @@ class TestRabbitMQBrokerInitializeConnectionWithOAuth:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_critical_tools()
+        self.module.register_rabbitmq_management_tools()
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQConnection')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.RabbitMQAdmin')
@@ -338,7 +338,7 @@ class TestRabbitMQBrokerGetBestPractices:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_critical_tools()
+        self.module.register_rabbitmq_management_tools()
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_general_best_practices')
     def test_rabbitmq_broker_get_best_practices_success(self, mock_handle):
@@ -376,7 +376,7 @@ class TestRabbitMQBrokerListQueues:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_queues')
     def test_rabbitmq_broker_list_queues_success(self, mock_handle):
@@ -423,7 +423,7 @@ class TestRabbitMQBrokerListExchanges:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_exchanges')
     def test_rabbitmq_broker_list_exchanges_success(self, mock_handle):
@@ -470,7 +470,7 @@ class TestRabbitMQBrokerListVhosts:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_vhosts')
     def test_rabbitmq_broker_list_vhosts_success(self, mock_handle):
@@ -517,7 +517,7 @@ class TestRabbitMQBrokerGetQueueInfo:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_queue_info')
@@ -555,7 +555,7 @@ class TestRabbitMQBrokerGetExchangeInfo:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_exchange_info')
@@ -593,7 +593,7 @@ class TestRabbitMQBrokerListShovels:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_shovels')
     def test_rabbitmq_broker_list_shovels_success(self, mock_handle):
@@ -629,7 +629,7 @@ class TestRabbitMQBrokerGetShovelInfo:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_shovel')
     def test_rabbitmq_broker_get_shovel_info_success(self, mock_handle):
@@ -665,7 +665,7 @@ class TestRabbitMQBrokerGetClusterNodesInfo:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_cluster_nodes')
     def test_rabbitmq_broker_get_cluster_nodes_info_success(self, mock_handle):
@@ -701,7 +701,7 @@ class TestRabbitMQBrokerListConnections:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_connections')
     def test_rabbitmq_broker_list_connections_success(self, mock_handle):
@@ -737,7 +737,7 @@ class TestRabbitMQBrokerListConsumers:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_consumers')
     def test_rabbitmq_broker_list_consumers_success(self, mock_handle):
@@ -773,7 +773,7 @@ class TestRabbitMQBrokerListUsers:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_users')
     def test_rabbitmq_broker_list_users_success(self, mock_handle):
@@ -809,7 +809,7 @@ class TestRabbitMQBrokerIsInAlarm:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_is_broker_in_alarm')
     def test_rabbitmq_broker_is_in_alarm_success(self, mock_handle):
@@ -845,7 +845,7 @@ class TestRabbitMQBrokerIsQuorumCritical:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_read_only_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=False)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_is_node_in_quorum_critical')
     def test_rabbitmq_broker_is_quorum_critical_success(self, mock_handle):
@@ -881,7 +881,7 @@ class TestRabbitMQBrokerDeleteQueue:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_mutative_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_delete_queue')
@@ -918,7 +918,7 @@ class TestRabbitMQBrokerPurgeQueue:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_mutative_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_purge_queue')
@@ -955,7 +955,7 @@ class TestRabbitMQBrokerDeleteExchange:
 
         self.mock_mcp.tool.return_value = mock_tool_decorator
         self.module = RabbitMQModule(self.mock_mcp)
-        self.module._RabbitMQModule__register_mutative_tools()
+        self.module.register_rabbitmq_management_tools(allow_mutative_tools=True)
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_delete_exchange')
