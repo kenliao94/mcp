@@ -226,10 +226,16 @@ class TestRabbitMQBrokerInitializeConnection:
 
         assert result == 'successfully connected'
         mock_conn_class.assert_called_once_with(
-            hostname='test-hostname', username='test-user', password='test-pass', use_tls=True # pragma: allowlist secret
+            hostname='test-hostname',  # pragma: allowlist secret
+            username='test-user',  # pragma: allowlist secret
+            password='test-pass',  # pragma: allowlist secret
+            use_tls=True,  # pragma: allowlist secret
         )
         mock_admin_class.assert_called_once_with(
-            hostname='test-hostname', username='test-user', password='test-pass', use_tls=True
+            hostname='test-hostname',  # pragma: allowlist secret
+            username='test-user',  # pragma: allowlist secret
+            password='test-pass',  # pragma: allowlist secret
+            use_tls=True,  # pragma: allowlist secret
         )
         assert self.module.rmq == mock_conn_instance
         assert self.module.rmq_admin == mock_admin_instance
@@ -287,10 +293,16 @@ class TestRabbitMQBrokerInitializeConnectionWithOAuth:
 
         assert result == 'successfully connected'
         mock_conn_class.assert_called_once_with(
-            hostname='test-hostname', username='', password='oauth-token-123', use_tls=True # pragma: allowlist secret
+            hostname='test-hostname',  # pragma: allowlist secret
+            username='',  # pragma: allowlist secret
+            password='oauth-token-123',  # pragma: allowlist secret
+            use_tls=True,  # pragma: allowlist secret
         )
         mock_admin_class.assert_called_once_with(
-            hostname='test-hostname', username='', password='oauth-token-123', use_tls=True # pragma: allowlist secret
+            hostname='test-hostname',  # pragma: allowlist secret
+            username='',  # pragma: allowlist secret
+            password='oauth-token-123',  # pragma: allowlist secret
+            use_tls=True,  # pragma: allowlist secret
         )
         assert self.module.rmq == mock_conn_instance
         assert self.module.rmq_admin == mock_admin_instance
