@@ -672,3 +672,181 @@ class TestRabbitMQBrokerGetClusterNodesInfo:
         
         with pytest.raises(AssertionError):
             func()
+class TestRabbitMQBrokerListConnections:
+    """Test class for RabbitMQ broker list connections functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_connections')
+    def test_rabbitmq_broker_list_connections_success(self, mock_handle):
+        """Test successful listing of connections."""
+        mock_handle.return_value = [{'name': 'conn1'}, {'name': 'conn2'}]
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_connections']
+        result = func()
+        
+        assert result == [{'name': 'conn1'}, {'name': 'conn2'}]
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_connections_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_connections']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+
+class TestRabbitMQBrokerListConsumers:
+    """Test class for RabbitMQ broker list consumers functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_consumers')
+    def test_rabbitmq_broker_list_consumers_success(self, mock_handle):
+        """Test successful listing of consumers."""
+        mock_handle.return_value = [{'consumer_tag': 'tag1'}, {'consumer_tag': 'tag2'}]
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_consumers']
+        result = func()
+        
+        assert result == [{'consumer_tag': 'tag1'}, {'consumer_tag': 'tag2'}]
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_consumers_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_consumers']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+
+class TestRabbitMQBrokerListUsers:
+    """Test class for RabbitMQ broker list users functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_list_users')
+    def test_rabbitmq_broker_list_users_success(self, mock_handle):
+        """Test successful listing of users."""
+        mock_handle.return_value = [{'name': 'user1'}, {'name': 'user2'}]
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_list_users']
+        result = func()
+        
+        assert result == [{'name': 'user1'}, {'name': 'user2'}]
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_list_users_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_list_users']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+
+class TestRabbitMQBrokerIsInAlarm:
+    """Test class for RabbitMQ broker is in alarm functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_is_broker_in_alarm')
+    def test_rabbitmq_broker_is_in_alarm_success(self, mock_handle):
+        """Test successful alarm status check."""
+        mock_handle.return_value = True
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_is_in_alarm']
+        result = func()
+        
+        assert result is True
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_is_in_alarm_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_is_in_alarm']
+        
+        with pytest.raises(AssertionError):
+            func()
+
+
+class TestRabbitMQBrokerIsQuorumCritical:
+    """Test class for RabbitMQ broker is quorum critical functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_read_only_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_is_node_in_quorum_critical')
+    def test_rabbitmq_broker_is_quorum_critical_success(self, mock_handle):
+        """Test successful quorum critical status check."""
+        mock_handle.return_value = False
+        self.module.rmq_admin = Mock()
+        
+        func = self.captured_functions['rabbitmq_broker_is_quorum_critical']
+        result = func()
+        
+        assert result is False
+        mock_handle.assert_called_once_with(self.module.rmq_admin)
+
+    def test_rabbitmq_broker_is_quorum_critical_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_is_quorum_critical']
+        
+        with pytest.raises(AssertionError):
+            func()
