@@ -226,7 +226,7 @@ class TestRabbitMQBrokerInitializeConnection:
 
         assert result == 'successfully connected'
         mock_conn_class.assert_called_once_with(
-            hostname='test-hostname', username='test-user', password='test-pass', use_tls=True
+            hostname='test-hostname', username='test-user', password='test-pass', use_tls=True # pragma: allowlist secret
         )
         mock_admin_class.assert_called_once_with(
             hostname='test-hostname', username='test-user', password='test-pass', use_tls=True
@@ -287,10 +287,10 @@ class TestRabbitMQBrokerInitializeConnectionWithOAuth:
 
         assert result == 'successfully connected'
         mock_conn_class.assert_called_once_with(
-            hostname='test-hostname', username='', password='oauth-token-123', use_tls=True
+            hostname='test-hostname', username='', password='oauth-token-123', use_tls=True # pragma: allowlist secret
         )
         mock_admin_class.assert_called_once_with(
-            hostname='test-hostname', username='', password='oauth-token-123', use_tls=True
+            hostname='test-hostname', username='', password='oauth-token-123', use_tls=True # pragma: allowlist secret
         )
         assert self.module.rmq == mock_conn_instance
         assert self.module.rmq_admin == mock_admin_instance
@@ -331,21 +331,21 @@ class TestRabbitMQBrokerGetBestPractices:
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_general_best_practices')
     def test_rabbitmq_broker_get_best_practices_success(self, mock_handle):
         """Test successful retrieval of RabbitMQ best practices."""
-        mock_handle.return_value = "Best practices for RabbitMQ deployment"
-        
+        mock_handle.return_value = 'Best practices for RabbitMQ deployment'
+
         func = self.captured_functions['rabbitmq_broker_get_best_practices']
         result = func()
-        
-        assert result == "Best practices for RabbitMQ deployment"
+
+        assert result == 'Best practices for RabbitMQ deployment'
         mock_handle.assert_called_once()
 
     @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_general_best_practices')
     def test_rabbitmq_broker_get_best_practices_failure(self, mock_handle):
         """Test exception handling when getting best practices fails."""
         mock_handle.side_effect = Exception('Failed to get best practices')
-        
+
         func = self.captured_functions['rabbitmq_broker_get_best_practices']
-        
+
         with pytest.raises(Exception, match='Failed to get best practices'):
             func()
 
@@ -371,17 +371,17 @@ class TestRabbitMQBrokerListQueues:
         """Test successful listing of RabbitMQ queues."""
         mock_handle.return_value = ['queue1', 'queue2']
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_queues']
         result = func()
-        
+
         assert result == ['queue1', 'queue2']
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_queues_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_queues']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -390,9 +390,9 @@ class TestRabbitMQBrokerListQueues:
         """Test exception handling when listing queues fails."""
         mock_handle.side_effect = Exception('Failed to list queues')
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_queues']
-        
+
         with pytest.raises(Exception, match='Failed to list queues'):
             func()
 
@@ -418,17 +418,17 @@ class TestRabbitMQBrokerListExchanges:
         """Test successful listing of RabbitMQ exchanges."""
         mock_handle.return_value = ['exchange1', 'exchange2']
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_exchanges']
         result = func()
-        
+
         assert result == ['exchange1', 'exchange2']
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_exchanges_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_exchanges']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -437,9 +437,9 @@ class TestRabbitMQBrokerListExchanges:
         """Test exception handling when listing exchanges fails."""
         mock_handle.side_effect = Exception('Failed to list exchanges')
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_exchanges']
-        
+
         with pytest.raises(Exception, match='Failed to list exchanges'):
             func()
 
@@ -465,17 +465,17 @@ class TestRabbitMQBrokerListVhosts:
         """Test successful listing of RabbitMQ vhosts."""
         mock_handle.return_value = ['/', 'vhost1']
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_vhosts']
         result = func()
-        
+
         assert result == ['/', 'vhost1']
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_vhosts_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_vhosts']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -484,11 +484,12 @@ class TestRabbitMQBrokerListVhosts:
         """Test exception handling when listing vhosts fails."""
         mock_handle.side_effect = Exception('Failed to list vhosts')
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_vhosts']
-        
+
         with pytest.raises(Exception, match='Failed to list vhosts'):
             func()
+
 
 class TestRabbitMQBrokerGetQueueInfo:
     """Test class for RabbitMQ broker get queue info functionality."""
@@ -512,10 +513,10 @@ class TestRabbitMQBrokerGetQueueInfo:
         """Test successful retrieval of queue info."""
         mock_handle.return_value = {'name': 'test-queue', 'messages': 10}
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_get_queue_info']
         result = func('test-queue', '/')
-        
+
         assert result == {'name': 'test-queue', 'messages': 10}
         mock_validate.assert_called_once_with('test-queue', 'Queue name')
         mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-queue', '/')
@@ -523,7 +524,7 @@ class TestRabbitMQBrokerGetQueueInfo:
     def test_rabbitmq_broker_get_queue_info_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_get_queue_info']
-        
+
         with pytest.raises(AssertionError):
             func('test-queue')
 
@@ -550,10 +551,10 @@ class TestRabbitMQBrokerGetExchangeInfo:
         """Test successful retrieval of exchange info."""
         mock_handle.return_value = {'name': 'test-exchange', 'type': 'direct'}
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_get_exchange_info']
         result = func('test-exchange', '/')
-        
+
         assert result == {'name': 'test-exchange', 'type': 'direct'}
         mock_validate.assert_called_once_with('test-exchange', 'Exchange name')
         mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-exchange', '/')
@@ -561,7 +562,7 @@ class TestRabbitMQBrokerGetExchangeInfo:
     def test_rabbitmq_broker_get_exchange_info_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_get_exchange_info']
-        
+
         with pytest.raises(AssertionError):
             func('test-exchange')
 
@@ -587,17 +588,17 @@ class TestRabbitMQBrokerListShovels:
         """Test successful listing of shovels."""
         mock_handle.return_value = ['shovel1', 'shovel2']
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_shovels']
         result = func()
-        
+
         assert result == ['shovel1', 'shovel2']
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_shovels_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_shovels']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -623,17 +624,17 @@ class TestRabbitMQBrokerGetShovelInfo:
         """Test successful retrieval of shovel info."""
         mock_handle.return_value = {'name': 'test-shovel', 'state': 'running'}
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_get_shovel_info']
         result = func('test-shovel', '/')
-        
+
         assert result == {'name': 'test-shovel', 'state': 'running'}
         mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-shovel', '/')
 
     def test_rabbitmq_broker_get_shovel_info_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_get_shovel_info']
-        
+
         with pytest.raises(AssertionError):
             func('test-shovel')
 
@@ -659,19 +660,21 @@ class TestRabbitMQBrokerGetClusterNodesInfo:
         """Test successful retrieval of cluster nodes info."""
         mock_handle.return_value = [{'name': 'node1', 'running': True}]
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_get_cluster_nodes_info']
         result = func()
-        
+
         assert result == [{'name': 'node1', 'running': True}]
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_get_cluster_nodes_info_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_get_cluster_nodes_info']
-        
+
         with pytest.raises(AssertionError):
             func()
+
+
 class TestRabbitMQBrokerListConnections:
     """Test class for RabbitMQ broker list connections functionality."""
 
@@ -693,17 +696,17 @@ class TestRabbitMQBrokerListConnections:
         """Test successful listing of connections."""
         mock_handle.return_value = [{'name': 'conn1'}, {'name': 'conn2'}]
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_connections']
         result = func()
-        
+
         assert result == [{'name': 'conn1'}, {'name': 'conn2'}]
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_connections_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_connections']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -729,17 +732,17 @@ class TestRabbitMQBrokerListConsumers:
         """Test successful listing of consumers."""
         mock_handle.return_value = [{'consumer_tag': 'tag1'}, {'consumer_tag': 'tag2'}]
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_consumers']
         result = func()
-        
+
         assert result == [{'consumer_tag': 'tag1'}, {'consumer_tag': 'tag2'}]
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_consumers_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_consumers']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -765,17 +768,17 @@ class TestRabbitMQBrokerListUsers:
         """Test successful listing of users."""
         mock_handle.return_value = [{'name': 'user1'}, {'name': 'user2'}]
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_list_users']
         result = func()
-        
+
         assert result == [{'name': 'user1'}, {'name': 'user2'}]
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_list_users_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_list_users']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -801,17 +804,17 @@ class TestRabbitMQBrokerIsInAlarm:
         """Test successful alarm status check."""
         mock_handle.return_value = True
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_is_in_alarm']
         result = func()
-        
+
         assert result is True
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_is_in_alarm_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_is_in_alarm']
-        
+
         with pytest.raises(AssertionError):
             func()
 
@@ -837,16 +840,127 @@ class TestRabbitMQBrokerIsQuorumCritical:
         """Test successful quorum critical status check."""
         mock_handle.return_value = False
         self.module.rmq_admin = Mock()
-        
+
         func = self.captured_functions['rabbitmq_broker_is_quorum_critical']
         result = func()
-        
+
         assert result is False
         mock_handle.assert_called_once_with(self.module.rmq_admin)
 
     def test_rabbitmq_broker_is_quorum_critical_no_admin(self):
         """Test exception when rmq_admin is None."""
         func = self.captured_functions['rabbitmq_broker_is_quorum_critical']
-        
+
         with pytest.raises(AssertionError):
             func()
+
+
+class TestRabbitMQBrokerDeleteQueue:
+    """Test class for RabbitMQ broker delete queue functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_mutative_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_delete_queue')
+    def test_rabbitmq_broker_delete_queue_success(self, mock_handle, mock_validate):
+        """Test successful queue deletion."""
+        self.module.rmq_admin = Mock()
+
+        func = self.captured_functions['rabbitmq_broker_delete_queue']
+        result = func('test-queue', '/')
+
+        assert result == 'Queue test-queue successfully deleted'
+        mock_validate.assert_called_once_with('test-queue', 'Queue name')
+        mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-queue', '/')
+
+    def test_rabbitmq_broker_delete_queue_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_delete_queue']
+
+        with pytest.raises(AssertionError):
+            func('test-queue')
+
+
+class TestRabbitMQBrokerPurgeQueue:
+    """Test class for RabbitMQ broker purge queue functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_mutative_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_purge_queue')
+    def test_rabbitmq_broker_purge_queue_success(self, mock_handle, mock_validate):
+        """Test successful queue purging."""
+        self.module.rmq_admin = Mock()
+
+        func = self.captured_functions['rabbitmq_broker_purge_queue']
+        result = func('test-queue', '/')
+
+        assert result == 'Queue test-queue successfully purged'
+        mock_validate.assert_called_once_with('test-queue', 'Queue name')
+        mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-queue', '/')
+
+    def test_rabbitmq_broker_purge_queue_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_purge_queue']
+
+        with pytest.raises(AssertionError):
+            func('test-queue')
+
+
+class TestRabbitMQBrokerDeleteExchange:
+    """Test class for RabbitMQ broker delete exchange functionality."""
+
+    def setup_method(self):
+        """Initialize test fixtures and capture tool functions."""
+        self.mock_mcp = Mock()
+        self.captured_functions = {}
+
+        def mock_tool_decorator(func):
+            self.captured_functions[func.__name__] = func
+            return func
+
+        self.mock_mcp.tool.return_value = mock_tool_decorator
+        self.module = RabbitMQModule(self.mock_mcp)
+        self.module._RabbitMQModule__register_mutative_tools()
+
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.validate_rabbitmq_name')
+    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_delete_exchange')
+    def test_rabbitmq_broker_delete_exchange_success(self, mock_handle, mock_validate):
+        """Test successful exchange deletion."""
+        self.module.rmq_admin = Mock()
+
+        func = self.captured_functions['rabbitmq_broker_delete_exchange']
+        result = func('test-exchange', '/')
+
+        assert result == 'Exchange test-exchange successfully deleted'
+        mock_validate.assert_called_once_with('test-exchange', 'Exchange name')
+        mock_handle.assert_called_once_with(self.module.rmq_admin, 'test-exchange', '/')
+
+    def test_rabbitmq_broker_delete_exchange_no_admin(self):
+        """Test exception when rmq_admin is None."""
+        func = self.captured_functions['rabbitmq_broker_delete_exchange']
+
+        with pytest.raises(AssertionError):
+            func('test-exchange')
