@@ -294,13 +294,13 @@ class TestRabbitMQBrokerInitializeConnectionWithOAuth:
         assert result == 'successfully connected'
         mock_conn_class.assert_called_once_with(
             hostname='test-hostname',  # pragma: allowlist secret
-            username='',  # pragma: allowlist secret
+            username='ignored',  # pragma: allowlist secret
             password='oauth-token-123',  # pragma: allowlist secret
             use_tls=True,  # pragma: allowlist secret
         )
         mock_admin_class.assert_called_once_with(
             hostname='test-hostname',  # pragma: allowlist secret
-            username='',  # pragma: allowlist secret
+            username='ignored',  # pragma: allowlist secret
             password='oauth-token-123',  # pragma: allowlist secret
             use_tls=True,  # pragma: allowlist secret
         )

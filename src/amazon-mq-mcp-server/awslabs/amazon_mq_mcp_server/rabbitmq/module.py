@@ -62,7 +62,7 @@ class RabbitMQModule:
             username: str,
             password: str,
         ) -> str:
-            """Connect to a new RabbitMQ broker.
+            """Connect to a new RabbitMQ broker which authentication strategy is SIMPLE.
 
             broker_hostname: The hostname of the broker. For example, b-a9565a64-da39-4afc-9239-c43a9376b5ba.mq.us-east-1.on.aws, b-9560b8e1-3d33-4d91-9488-a3dc4a61dfe7.mq.us-east-1.amazonaws.com
             username: The username of user
@@ -94,18 +94,18 @@ class RabbitMQModule:
             """Connect to a new RabbitMQ broker using OAuth. It only applies to RabbitMQ broker which authentication strategy is config_managed.
 
             broker_hostname: The hostname of the broker. For example, b-a9565a64-da39-4afc-9239-c43a9376b5ba.mq.us-east-1.on.aws, b-9560b8e1-3d33-4d91-9488-a3dc4a61dfe7.mq.us-east-1.amazonaws.com
-            oauth_token: A valid OAuth token obtained
+            oauth_token: A valid access token
             """
             try:
                 self.rmq = RabbitMQConnection(
                     hostname=broker_hostname,
-                    username='',
+                    username='ignored',
                     password=oauth_token,
                     use_tls=True,
                 )
                 self.rmq_admin = RabbitMQAdmin(
                     hostname=broker_hostname,
-                    username='',
+                    username='ignored',
                     password=oauth_token,
                     use_tls=True,
                 )
