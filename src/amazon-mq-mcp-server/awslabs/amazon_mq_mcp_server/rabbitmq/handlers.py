@@ -25,28 +25,30 @@ from typing import Any, List
 ######      RabbitMQ doc handlers         ######
 ################################################
 
+
 def handle_get_guidelines(guideline_name: str):
     """Get RabbitMQ operational guidelines."""
     script_dir = Path(__file__).parent
-    content = ""
-    if guideline_name == "rabbimq_broker_sizing_guide":
+    content = ''
+    if guideline_name == 'rabbimq_broker_sizing_guide':
         content = (script_dir / 'doc' / 'rabbitmq_broker_sizing_guide.md').read_text()
 
-    elif guideline_name == "rabbitmq_broker_setup_best_practices_guide":
+    elif guideline_name == 'rabbitmq_broker_setup_best_practices_guide':
         content = (script_dir / 'doc' / 'rabbitmq_setup_best_practice.md').read_text()
 
-    elif guideline_name == "rabbitmq_3_to_4_migration_guide":
-        raise NotImplementedError("The guideline is not available yet")
+    elif guideline_name == 'rabbitmq_3_to_4_migration_guide':
+        raise NotImplementedError('The guideline is not available yet')
 
-    elif guideline_name == "rabbitmq_quorum_queue_migration_guide":
+    elif guideline_name == 'rabbitmq_quorum_queue_migration_guide':
         content = (script_dir / 'doc' / 'rabbitmq_quorum_queue_migration_guide.md').read_text()
 
-    elif guideline_name == "rabbitmq_client_performance_optimization_guide":
-        content = (script_dir / 'doc' / 'rabbitmq_performance_optimization_best_practice.md').read_text()
+    elif guideline_name == 'rabbitmq_client_performance_optimization_guide':
+        content = (
+            script_dir / 'doc' / 'rabbitmq_performance_optimization_best_practice.md'
+        ).read_text()
 
     else:
         raise ValueError(f"{guideline_name} doesn't exist")
-
 
     return content
 

@@ -1,4 +1,4 @@
-You can migrate your classic mirrored queues to quorum queues on Amazon MQ brokers on version 3.13 or above by creating a new virtual host on the same cluster, or by migrating in place. 
+You can migrate your classic mirrored queues to quorum queues on Amazon MQ brokers on version 3.13 or above by creating a new virtual host on the same cluster, or by migrating in place.
 
 ## Option 1: Migrating from classic mirrored queues to quorum queues with a new virtual host
 

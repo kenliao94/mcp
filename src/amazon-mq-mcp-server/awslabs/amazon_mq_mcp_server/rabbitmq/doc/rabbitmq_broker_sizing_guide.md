@@ -7,7 +7,7 @@
 
 Smaller broker instance types (m7g.medium) are recommended only for testing application performance. We recommend larger broker instance types (m7g.large and above) for production levels of clients and queues, high throughput, messages in memory, and redundant messages.
 
-It is important to test your brokers to determine the appropriate instance type and size for your workload messaging requirements. Use the following sizing guidelines to determine the best appropriate instance type for your application. 
+It is important to test your brokers to determine the appropriate instance type and size for your workload messaging requirements. Use the following sizing guidelines to determine the best appropriate instance type for your application.
 
 > ⚠️ **Important:** You cannot downgrade a broker from an mq.m5 instance type to an mq.t3.micro instance type.
 
