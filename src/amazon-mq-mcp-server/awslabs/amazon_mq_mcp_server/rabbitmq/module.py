@@ -21,7 +21,7 @@ from .handlers import (
     handle_delete_queue,
     handle_get_cluster_nodes,
     handle_get_exchange_info,
-    handle_get_general_best_practices,
+    handle_get_guidelines,
     handle_get_queue_info,
     handle_is_broker_in_alarm,
     handle_is_node_in_quorum_critical,
@@ -115,10 +115,17 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
-        def rabbitmq_broker_get_best_practices() -> str:
-            """Get the general best practices for deploying RabbitMQ on Amazon MQ."""
+        def rabbitmq_broker_get_guideline(guideline_name: str) -> str:
+            """Get the general best practices for deploying RabbitMQ on Amazon MQ.
+
+            - guideline_name: It can take the following value:
+                - rabbimq_broker_sizing_guide : this guide tells the customer what instance size to pick for production workload
+                - rabbitmq_broker_setup_best_practices_guide: this guide tells the customer what are the best practices in setting up the RabbitMQ broker
+                - rabbitmq_quorum_queue_migration_guide: this guide tells the customer how to migrate from classic mirror queue to quorum queue
+                - rabbitmq_client_performance_optimization_guide: this guide tells the customer how to optimize their application to get peformance gain of using RabbitMQ
+            """
             try:
-                result = handle_get_general_best_practices()
+                result = handle_get_guidelines(guideline_name)
                 return str(result)
             except Exception as e:
                 raise e

@@ -27,10 +27,9 @@ class RabbitMQAdmin:
 
     def __init__(self, hostname: str, username: str, password: str, use_tls: bool):
         """Initialize RabbitMQ admin client."""
-        port = 15671
         host = hostname
         self.protocol = 'https' if use_tls else 'http'
-        self.base_url = f'{self.protocol}://{host}:{port}/api'
+        self.base_url = f'{self.protocol}://{host}/api'
         self.auth = base64.b64encode(f'{username}:{password}'.encode()).decode()
         self.headers = {'Authorization': f'Basic {self.auth}', 'Content-Type': 'application/json'}
 
