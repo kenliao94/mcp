@@ -81,7 +81,7 @@ class RabbitMQModule:
                     password=password,
                     use_tls=True,
                 )
-
+                self.rmq_admin.test_connection()
                 return 'successfully connected'
             except Exception as e:
                 raise e
@@ -109,7 +109,7 @@ class RabbitMQModule:
                     password=oauth_token,
                     use_tls=True,
                 )
-
+                self.rmq_admin.test_connection()
                 return 'successfully connected'
             except Exception as e:
                 raise e

@@ -42,6 +42,10 @@ class RabbitMQAdmin:
         response.raise_for_status()
         return response
 
+    def test_connection(self):
+        """Test if the RabbitMQ admin HTTP endpoints are accessible."""
+        self._make_request('GET', 'queues')
+
     def list_queues(self) -> list[dict]:
         """List all queues in the RabbitMQ server."""
         response = self._make_request('GET', 'queues')

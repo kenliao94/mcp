@@ -22,7 +22,7 @@ from awslabs.amazon_mq_mcp_server.rabbitmq.handlers import (
     handle_get_cluster_node_memory,
     handle_get_cluster_nodes,
     handle_get_exchange_info,
-    handle_get_general_best_practices,
+    handle_get_guidelines,
     handle_get_overview,
     handle_get_queue_info,
     handle_is_broker_in_alarm,
@@ -196,9 +196,15 @@ class TestShovelHandlers:
 class TestDocHandlers:
     """Tests for documentation handlers."""
 
-    def test_handle_get_general_best_practices(self):
+    def test_handle_get_guidelines(self):
         """Test get general best practices handler."""
-        result = handle_get_general_best_practices()
+        result = handle_get_guidelines("rabbitmq_broker_setup_best_practices_guide")
+        assert isinstance(result, str)
+        result = handle_get_guidelines("rabbimq_broker_sizing_guide")
+        assert isinstance(result, str)
+        result = handle_get_guidelines("rabbitmq_quorum_queue_migration_guide")
+        assert isinstance(result, str)
+        result = handle_get_guidelines("rabbitmq_client_performance_optimization_guide")
         assert isinstance(result, str)
         assert len(result) > 0
 

@@ -324,44 +324,6 @@ class TestRabbitMQBrokerInitializeConnectionWithOAuth:
             func('test-hostname', 'oauth-token-123')
 
 
-class TestRabbitMQBrokerGetBestPractices:
-    """Test class for RabbitMQ broker best practices functionality."""
-
-    def setup_method(self):
-        """Initialize test fixtures and capture tool functions."""
-        self.mock_mcp = Mock()
-        self.captured_functions = {}
-
-        def mock_tool_decorator(func):
-            self.captured_functions[func.__name__] = func
-            return func
-
-        self.mock_mcp.tool.return_value = mock_tool_decorator
-        self.module = RabbitMQModule(self.mock_mcp)
-        self.module.register_rabbitmq_management_tools()
-
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_general_best_practices')
-    def test_rabbitmq_broker_get_best_practices_success(self, mock_handle):
-        """Test successful retrieval of RabbitMQ best practices."""
-        mock_handle.return_value = 'Best practices for RabbitMQ deployment'
-
-        func = self.captured_functions['rabbitmq_broker_get_best_practices']
-        result = func()
-
-        assert result == 'Best practices for RabbitMQ deployment'
-        mock_handle.assert_called_once()
-
-    @patch('awslabs.amazon_mq_mcp_server.rabbitmq.module.handle_get_general_best_practices')
-    def test_rabbitmq_broker_get_best_practices_failure(self, mock_handle):
-        """Test exception handling when getting best practices fails."""
-        mock_handle.side_effect = Exception('Failed to get best practices')
-
-        func = self.captured_functions['rabbitmq_broker_get_best_practices']
-
-        with pytest.raises(Exception, match='Failed to get best practices'):
-            func()
-
-
 class TestRabbitMQBrokerListQueues:
     """Test class for RabbitMQ broker list queues functionality."""
 
