@@ -36,9 +36,6 @@ def handle_get_guidelines(guideline_name: str):
     elif guideline_name == 'rabbitmq_broker_setup_best_practices_guide':
         content = (script_dir / 'doc' / 'rabbitmq_setup_best_practice.md').read_text()
 
-    elif guideline_name == 'rabbitmq_3_to_4_migration_guide':
-        raise NotImplementedError('The guideline is not available yet')
-
     elif guideline_name == 'rabbitmq_quorum_queue_migration_guide':
         content = (script_dir / 'doc' / 'rabbitmq_quorum_queue_migration_guide.md').read_text()
 
