@@ -103,7 +103,7 @@ def handle_is_node_in_quorum_critical(rabbitmq_admin: RabbitMQAdmin) -> bool:
     return False if status == 200 else True
 
 
-def handle_get_definition(rabbitmq_admin: RabbitMQAdmin) -> bool:
+def handle_get_definition(rabbitmq_admin: RabbitMQAdmin) -> dict:
     """Get the server definition."""
     return rabbitmq_admin.get_broker_definition()
 
