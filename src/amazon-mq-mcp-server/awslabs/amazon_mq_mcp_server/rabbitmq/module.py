@@ -20,6 +20,7 @@ from .handlers import (
     handle_delete_exchange,
     handle_delete_queue,
     handle_get_cluster_nodes,
+    handle_get_definition,
     handle_get_exchange_info,
     handle_get_guidelines,
     handle_get_queue_info,
@@ -123,6 +124,7 @@ class RabbitMQModule:
                 - rabbitmq_broker_setup_best_practices_guide: this guide tells the customer what are the best practices in setting up the RabbitMQ broker
                 - rabbitmq_quorum_queue_migration_guide: this guide tells the customer how to migrate from classic mirror queue to quorum queue
                 - rabbitmq_client_performance_optimization_guide: this guide tells the customer how to optimize their application to get peformance gain of using RabbitMQ
+                - rabbitmq_check_broker_follow_best_practice_instructions: this contains instruction to check if a given RabbitMQ broker is following best practices
             """
             try:
                 result = handle_get_guidelines(guideline_name)
@@ -247,6 +249,15 @@ class RabbitMQModule:
             try:
                 assert self.rmq_admin is not None
                 return handle_is_node_in_quorum_critical(self.rmq_admin)
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
+        def rabbitmq_broker_get_broker_definition() -> dict:
+            """Get the RabbitMQ definitions: exchanges, queues, bindings, users, virtual hosts, permissions, topic permissions, and parameters. Everything apart from messages."""
+            try:
+                assert self.rmq_admin is not None
+                return handle_get_definition(self.rmq_admin)
             except Exception as e:
                 raise e
 

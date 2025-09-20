@@ -175,3 +175,8 @@ class RabbitMQAdmin:
         """Check if there are quorum queues with minimum online quorum."""
         response = self._make_request('GET', 'checks/node-is-quorum-critical')
         return response.status_code
+
+    def get_broker_definition(self) -> dict:
+        """Get the broker definition."""
+        response = self._make_request('GET', 'definitions')
+        return response.json()

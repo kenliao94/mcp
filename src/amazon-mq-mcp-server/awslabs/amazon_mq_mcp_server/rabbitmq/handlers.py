@@ -47,6 +47,11 @@ def handle_get_guidelines(guideline_name: str):
             script_dir / 'doc' / 'rabbitmq_performance_optimization_best_practice.md'
         ).read_text()
 
+    elif guideline_name == 'rabbitmq_check_broker_follow_best_practice_instructions':
+        content = (
+            script_dir / 'doc' / 'rabbitmq_check_broker_follow_best_practice_instructions.md'
+        ).read_text()
+
     else:
         raise ValueError(f"{guideline_name} doesn't exist")
 
@@ -96,6 +101,11 @@ def handle_is_node_in_quorum_critical(rabbitmq_admin: RabbitMQAdmin) -> bool:
     """Check if there are quorum queues with minimum online quorum."""
     status = rabbitmq_admin.get_is_node_quorum_critical()
     return False if status == 200 else True
+
+
+def handle_get_definition(rabbitmq_admin: RabbitMQAdmin) -> bool:
+    """Get the server definition."""
+    return rabbitmq_admin.get_broker_definition()
 
 
 ## Connections
