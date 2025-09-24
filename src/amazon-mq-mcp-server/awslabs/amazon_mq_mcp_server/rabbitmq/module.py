@@ -137,7 +137,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_queues() -> list[Any]:
             """List all the queues in the broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_queues(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -146,7 +147,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_exchanges() -> list[Any]:
             """List all the exchanges in the broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_exchanges(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -155,7 +157,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_vhosts() -> list[Any]:
             """List all the virtual hosts (vhosts) in the broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_vhosts(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -164,7 +167,8 @@ class RabbitMQModule:
         def rabbitmq_broker_get_queue_info(queue: str, vhost: str = '/') -> dict:
             """Get detailed information about a specific queue."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 validate_rabbitmq_name(queue, 'Queue name')
                 return handle_get_queue_info(self.rmq_admin, queue, vhost)
             except Exception as e:
@@ -174,7 +178,8 @@ class RabbitMQModule:
         def rabbitmq_broker_get_exchange_info(exchange: str, vhost: str = '/') -> dict:
             """Get detailed information about a specific exchange."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 validate_rabbitmq_name(exchange, 'Exchange name')
                 return handle_get_exchange_info(self.rmq_admin, exchange, vhost)
             except Exception as e:
@@ -184,7 +189,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_shovels() -> list[Any]:
             """Get detailed information about shovels in the RabbitMQ broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_shovels(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -193,7 +199,8 @@ class RabbitMQModule:
         def rabbitmq_broker_get_shovel_info(name: str, vhost: str = '/') -> dict:
             """Get detailed information about specific shovel by name that is in a selected virtual host (vhost) in the RabbitMQ broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_shovel(self.rmq_admin, name, vhost)
             except Exception as e:
                 raise e
@@ -202,7 +209,8 @@ class RabbitMQModule:
         def rabbitmq_broker_get_cluster_nodes_info() -> list[Any]:
             """Get the list of nodes and their info in the cluster."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_get_cluster_nodes(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -211,7 +219,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_connections() -> list[Any]:
             """List all connections on the RabbitMQ broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_connections(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -220,7 +229,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_consumers() -> list[Any]:
             """List all consumers on the RabbitMQ broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_consumers(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -229,7 +239,8 @@ class RabbitMQModule:
         def rabbitmq_broker_list_users() -> list[Any]:
             """List all users on the RabbitMQ broker."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_list_users(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -238,7 +249,8 @@ class RabbitMQModule:
         def rabbitmq_broker_is_in_alarm() -> bool:
             """Check if the RabbitMQ broker is in alarm."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_is_broker_in_alarm(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -247,7 +259,8 @@ class RabbitMQModule:
         def rabbitmq_broker_is_quorum_critical() -> bool:
             """Check if there are quorum queues with minimum online quorum."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_is_node_in_quorum_critical(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -256,7 +269,8 @@ class RabbitMQModule:
         def rabbitmq_broker_get_broker_definition() -> dict:
             """Get the RabbitMQ definitions: exchanges, queues, bindings, users, virtual hosts, permissions, topic permissions, and parameters. Everything apart from messages."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 return handle_get_definition(self.rmq_admin)
             except Exception as e:
                 raise e
@@ -266,7 +280,8 @@ class RabbitMQModule:
         def rabbitmq_broker_delete_queue(queue: str, vhost: str = '/') -> str:
             """Delete a specific queue."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 validate_rabbitmq_name(queue, 'Queue name')
                 handle_delete_queue(self.rmq_admin, queue, vhost)
                 return f'Queue {queue} successfully deleted'
@@ -277,7 +292,8 @@ class RabbitMQModule:
         def rabbitmq_broker_purge_queue(queue: str, vhost: str = '/') -> str:
             """Remove all messages from a specific queue."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 validate_rabbitmq_name(queue, 'Queue name')
                 handle_purge_queue(self.rmq_admin, queue, vhost)
                 return f'Queue {queue} successfully purged'
@@ -288,7 +304,8 @@ class RabbitMQModule:
         def rabbitmq_broker_delete_exchange(exchange: str, vhost: str = '/') -> str:
             """Delete a specific exchange."""
             try:
-                assert self.rmq_admin is not None
+                if self.rmq_admin is None:
+                    raise AssertionError('RabbitMQ admin endpoints not connected.')
                 validate_rabbitmq_name(exchange, 'Exchange name')
                 handle_delete_exchange(self.rmq_admin, exchange, vhost)
                 return f'Exchange {exchange} successfully deleted'
